@@ -28,7 +28,12 @@ export default function CategoriesPage() {
     }
   };
 
-  const submitCategory = async function(category: Category){
+  const deleteCategory = function(item?: SelectOption): void{
+    setCategories(categories.filter(c => c.id != item?.value));
+    setCategory(defaultCategory);
+  };
+
+  const submitCategory = async function(category: Category): Promise<void>{
     setLoading(true);
     const foundCategories = categories.filter(c => c.id == category.id);
 
@@ -53,6 +58,7 @@ export default function CategoriesPage() {
         placeholder='Select a category'
         disabled={isLoading}
         onChangeOption={selectCategory}
+        onDeleteOption={deleteCategory}
       />
     </div>
   );

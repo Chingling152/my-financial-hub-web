@@ -1,7 +1,7 @@
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-
 import { act } from 'react-dom/test-utils';
+
 import TransactionListFilter from '../../../../../commom/components/transactions/list/filter/transaction-list-filter';
 import { TransactionType } from '../../../../../commom/interfaces/transaction';
 
@@ -30,17 +30,11 @@ describe('on submit', () => {
   //TODO: make the test by changing the fields instead of the defaultFilter prop
   it('should send all filtered values on filter', ()=>{
     const filter = {
-      types: [
-        TransactionType.Earn
-      ],
+      types: [TransactionType.Earn],
       startDate: new Date(),
       targetDate: new Date(),
-      categories: [
-        'category'
-      ],
-      accounts: [
-        'account'
-      ]
+      categories: ['category'],
+      accounts: ['account']
     };
     const onFilter = jest.fn();
     

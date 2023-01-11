@@ -24,37 +24,41 @@ export default function HttpFormSelect(
   const [options, setOptions] = useState<SelectOption[]>([]);
   const [isLoading, setLoading] = useState<boolean>(true);
 
-  const getData = async function(): Promise<void> {
+  const deleteData = async function(selectedOption?: string): Promise<void>{
     setLoading(true);
-    const response = await api.GetAllAsync();
-    if(!response.hasError){
-      setOptions(
-        response.data.map(x => 
-          ({
-            label: x['name'],
-            value: x['id']
-          })
-        )
-      );
-      setLoading(false);
-    }
-  };
+    const find = options.filter(x => x.value === selectedOption);
+    const option = find.length > 0 && find[0];
 
-  const deleteData = async function(option :SelectOption): Promise<void>{
-    setLoading(true);
-    const response = await api.DeleteAsync(option.value);
-    if(response){
-      setOptions(options.filter(x => x.value === option.value));
-      onDeleteOption?.(option);
+    if(option){
+      const response = await api.DeleteAsync(option.value);
+      if(response){
+        setOptions(options.filter(x => x.value != option.value));
+        onDeleteOption?.(option);
+      }
     }
     setLoading(false);
   };
 
   useEffect(
     () => {
+      const getData = async function(): Promise<void> {
+        setLoading(true);
+        const response = await api.GetAllAsync();
+        if(!response.hasError){
+          setOptions(
+            response.data.map(x => 
+              ({
+                label: x['name'],
+                value: x['id']
+              })
+            )
+          );
+          setLoading(false);
+        }
+      };
       getData();
     }, 
-    []
+    [api]
   );
 
   return (
@@ -64,7 +68,7 @@ export default function HttpFormSelect(
       disabled={disabled || isLoading}
       placeholder={placeholder}
       onChangeOption={onChangeOption}
-      onDeleteOption={onDeleteOption?()=> deleteData : undefined}
+      onDeleteOption={onDeleteOption && deleteData}
     />
   );
 }

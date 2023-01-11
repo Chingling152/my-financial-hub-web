@@ -16,7 +16,7 @@ export function createUrlStartEndDateQuery(startDate?: Date, endDate?: Date): st
   if(!startDate || !endDate){
     return '';
   }
-  return `startDate=${startDate.toISODateString()}&targetDate=${endDate.toISODateString()}` + '&';
+  return `startDate=${startDate.toISODateString()}&endDate=${endDate.toISODateString()}` + '&';
 }
 
 export function createUrlQueryNumber(queryName: string,nums?: number[]): string{

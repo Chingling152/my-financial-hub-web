@@ -16,22 +16,24 @@ export default function TransactionForm(
   {
     formData = defaultTransaction,
     onSubmit
-  }: FormProps) {
+  }: FormProps
+) {
   const { accountsApi, categoriesApi } = useApisContext();
 
   const { 
-    isLoading ,transaction, getErrorMessage,
+    isLoading, errors, transaction,
+    
     changeField, toggleIsPaid,
     changeAmount, changeCategory, changeType,
     changeAccount,
 
     submitTransaction,
-  } = UseTransactionForm({formData, onSubmit });
+  } = UseTransactionForm({ formData, onSubmit });
 
   return (
     <form onSubmit={submitTransaction}>
       <div className='row my-2'>
-        <FormFieldLabel name='type' title='type' error={getErrorMessage('type')}>
+        <FormFieldLabel name='type' title='type' error={errors?.type.message}>
           <EnumFormSelect
             options={TransactionType}
             value={transaction.type}
@@ -42,7 +44,7 @@ export default function TransactionForm(
         </FormFieldLabel>
       </div>
       <div className='row my-2'>
-        <FormFieldLabel name='description' title='description' error={getErrorMessage('description')}>
+        <FormFieldLabel name='description' title='description'>
           <textarea 
             title='description'
             name='description'
@@ -55,7 +57,7 @@ export default function TransactionForm(
       </div>
 
       <div className='row my-2'>
-        <FormFieldLabel name='category' title='category' error={getErrorMessage('categoryId')}>
+        <FormFieldLabel name='category' title='category' error={errors?.categoryId.message}>
           <HttpFormSelect 
             api={categoriesApi}
             placeholder='Select a category'
@@ -67,7 +69,7 @@ export default function TransactionForm(
       </div>
 
       <div className='row my-2'>
-        <FormFieldLabel name='account' title='account' error={getErrorMessage('accountId')}>
+        <FormFieldLabel name='account' title='account' error={errors?.accountId.message}>
           <HttpFormSelect 
             api={accountsApi}
             placeholder='Select an account'
@@ -79,7 +81,7 @@ export default function TransactionForm(
       </div>
 
       <div className='row my-2'>
-        <FormFieldLabel name='amount' title='amount' error={getErrorMessage('amount')}>
+        <FormFieldLabel name='amount' title='amount' error={errors?.amount.message}>
           <input
             title='amount'
             type='number'
@@ -94,7 +96,7 @@ export default function TransactionForm(
       </div>
 
       <div className='row my-2'>
-        <FormFieldLabel name='targetdate' title='target date' error={getErrorMessage('targetdate')}>
+        <FormFieldLabel name='targetdate' title='target date' error={errors?.targetDate.message}>
           <input
             title='targetdate'
             name='targetDate'
@@ -110,7 +112,7 @@ export default function TransactionForm(
         transaction.status === TransactionStatus.Committed &&
           (
             <div className='row my-2'>
-              <FormFieldLabel name='finishdate' title='finish date' error={getErrorMessage('finishdate')}>
+              <FormFieldLabel name='finishdate' title='finish date' error={errors?.finishDate.message}>
                 <input
                   title='finishdate'
                   name='finishDate'
@@ -124,7 +126,7 @@ export default function TransactionForm(
           )
       }
       <div className='row my-2'>
-        <FormFieldLabel name='ispaid' title='is Paid' error={getErrorMessage('ispaid')}>
+        <FormFieldLabel name='ispaid' title='is Paid'>
           <input
             title='ispaid'
             name='isPaid'

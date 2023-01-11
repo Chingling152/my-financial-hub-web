@@ -2,10 +2,20 @@ import { ChangeEvent, FormEvent, useEffect, useState } from 'react';
 
 import { useApisContext } from '../../../../contexts/api-context';
 import { UseCreateTransaction, UseUpdateTransaction } from '../../../../hooks/transactions-hooks';
-import UseTransactionValidator from '../../../../hooks/validators/transaction-validator-hooks';
 
 import { defaultTransaction, Transaction, TransactionStatus } from '../../../../interfaces/transaction';
+import ValidationError from '../../../../interfaces/validation-error';
+import ValidateTransaction from '../../../../validators/transaction-validator';
 import SelectOption from '../../../forms/form-select/types/select-option';
+
+type TransactionValidationResult = {
+  type: ValidationError,
+  amount: ValidationError,
+  accountId: ValidationError,
+  categoryId: ValidationError,
+  targetDate: ValidationError,
+  finishDate: ValidationError
+}
 
 interface ITransactionFormHook {
   changeField: (event: ChangeEvent<HTMLInputElement|HTMLTextAreaElement>) => void,
@@ -14,11 +24,13 @@ interface ITransactionFormHook {
   changeAccount: (option?: SelectOption) => void,
   changeType: (type? : number) => void,
   toggleIsPaid: () => void,
+
   submitTransaction: (event: FormEvent<HTMLFormElement>) => Promise<void>,
-  getErrorMessage: (field: string) => string | undefined,
 
   isLoading: boolean,
-  transaction: Transaction
+  transaction: Transaction,
+
+  errors?: TransactionValidationResult
 }
 
 interface ITransactionFormHookProps {
@@ -32,17 +44,22 @@ export function UseTransactionForm(
     onSubmit
   } : ITransactionFormHookProps
 )   : ITransactionFormHook{
+  const { transactionsApi } = useApisContext();
   const [ transaction, setTransaction ] = useState<Transaction>(formData);
   const [ isLoading, setLoading ] = useState(false);
-  const { transactionsApi } = useApisContext();
-  const { hasError ,getErrorMessage ,validate } = UseTransactionValidator();
+  const [ errors, setErrors ] = useState<TransactionValidationResult>();
 
   const submitTransaction = async function (event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setLoading(true);
 
-    validate(transaction);
-    if(!hasError){
+    const result = ValidateTransaction(transaction);
+    const hasErrorResult = 
+      result.accountId.hasError  || result.amount.hasError || 
+      result.categoryId.hasError || result.finishDate.hasError || 
+      result.targetDate.hasError || result.type.hasError;
+    
+    if(!hasErrorResult){
       let tra: Transaction;
       
       if (transaction.id) {
@@ -54,6 +71,8 @@ export function UseTransactionForm(
   
       onSubmit?.(tra);
       setTransaction(defaultTransaction); 
+    }else{
+      setErrors(result);
     }
 
     setLoading(false);
@@ -122,7 +141,8 @@ export function UseTransactionForm(
   return {
     isLoading,
     transaction,
-    getErrorMessage,
+
+    errors,
 
     changeField,
     changeType,

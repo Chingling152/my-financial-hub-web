@@ -5,9 +5,10 @@ import { CreateSelectOptions } from '../../../../__mocks__/forms/select-option-b
 import { getRandomItem } from '../../../../__mocks__/utils/array-utils';
 
 import FormSelect from '../../../../commom/components/forms/form-select';
+import { act } from 'react-dom/test-utils';
 
 describe('on render', () => {
-  describe('when does not have a start value',()=>{
+  describe('when does not have a start value', () => {
     it('should show the placeholder', () => {
       const expectedResult = 'placeholder';
       const { getByText } = render(
@@ -18,32 +19,32 @@ describe('on render', () => {
         />
       );
       const val = getByText(expectedResult);
-    
+
       expect(val).toBeInTheDocument();
       expect(val).toHaveTextContent(expectedResult);
     });
   });
 
-  describe('when has a start value', ()=>{
-    it('should show the value', ()=>{
+  describe('when has a start value', () => {
+    it('should show the value', () => {
       const options = CreateSelectOptions(5);
-      const expectedResult = options[0].label;
+      const expectedResult = options[0];
       const { getByText } = render(
         <FormSelect
-          value={expectedResult}
+          value={expectedResult.value}
           disabled={false}
           options={options}
         />
       );
-      const val = getByText(expectedResult);
-    
+      const val = getByText(expectedResult.label);
+
       expect(val).toBeInTheDocument();
-      expect(val).toHaveTextContent(expectedResult);
+      expect(val).toHaveTextContent(expectedResult.label);
     });
   });
-  
-  describe('when onDelete is null',() => {
-    it('should not show delete option',() => {
+
+  describe('when onDelete is null', () => {
+    it('should not show delete option', () => {
       const { queryByText } = render(
         <FormSelect
           disabled={false}
@@ -186,7 +187,7 @@ describe('on delete', () => {
     const options = CreateSelectOptions();
     const placeholder = 'placeholder';
 
-    const { getByText , getByTestId } = render(
+    const { getByText, getByTestId } = render(
       <FormSelect
         placeholder={placeholder}
         disabled={false}
@@ -210,7 +211,7 @@ describe('on delete', () => {
     const options = CreateSelectOptions();
     const placeholder = 'placeholder';
 
-    const { getByText , getByTestId, queryByText } = render(
+    const { getByText, getByTestId, queryByText } = render(
       <FormSelect
         placeholder={placeholder}
         disabled={false}
@@ -219,16 +220,28 @@ describe('on delete', () => {
       />
     );
 
-    const button = getByText(placeholder);
-    userEvent.click(button);
+    act(
+      () => {
+        const button = getByText(placeholder);
+        userEvent.click(button);
+      }
+    );
 
     const randomOption = getRandomItem(options);
     expect(getByText(randomOption.label)).toBeInTheDocument();
-    
-    const option = getByTestId('delete-' + randomOption.value);
-    userEvent.click(option);
-    
-    userEvent.click(button);
+
+    act(
+      () => {
+        const button = getByText(placeholder);
+        userEvent.click(button);
+
+        const option = getByTestId('delete-' + randomOption.value);
+        userEvent.click(option);
+
+        userEvent.click(button);
+      }
+    );
+
     expect(queryByText(randomOption.label)).not.toBeInTheDocument();
   });
 
@@ -237,7 +250,7 @@ describe('on delete', () => {
     const placeholder = 'placeholder';
     const onDeleteOption = jest.fn();
 
-    const { getByText , getByTestId } = render(
+    const { getByText, getByTestId } = render(
       <FormSelect
         placeholder={placeholder}
         disabled={false}

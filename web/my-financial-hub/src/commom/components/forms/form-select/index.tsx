@@ -1,10 +1,7 @@
 import style from './form-select.module.scss';
 
 import FormSelectItem from './form-select-item';
-
 import SelectOption from './types/select-option';
-
-import UseToggleState from '../../../hooks/components/toggle-state';
 import UseFormSelectOption from './hooks/form-select-option-hook';
 
 type FormSelectProps = {
@@ -12,8 +9,8 @@ type FormSelectProps = {
   value?: string,
   disabled: boolean,
   options: SelectOption[]
-  onChangeOption?: (selectedOption?: SelectOption) => void,
-  onDeleteOption?: (selectedOption?: string) => void,
+  onChangeOption?: (selectedOption?: SelectOption) => void | Promise<void>,
+  onDeleteOption?: (selectedOption?: string) => void | Promise<void>,
 }
 
 //TODO: change to https://react-select.com/components
@@ -25,8 +22,11 @@ export default function FormSelect(
   }:
     FormSelectProps
 ) {
-  const [isOpen, toggle] = UseToggleState(false);
-  const { selectedOption, optionsList, selectOption, deleteOption} = UseFormSelectOption(
+  const { 
+    selectedOption, optionsList, 
+    selectOption, deleteOption ,
+    isOpen, toggle
+  } = UseFormSelectOption(
     {
       options, value,
       onChangeOption, onDeleteOption
@@ -48,7 +48,7 @@ export default function FormSelect(
         </button>
         <button
           type='button'
-          onClick={() => isOpen && selectOption()}
+          onClick={() => selectOption()}
           disabled={disabled}
         >
           Clear

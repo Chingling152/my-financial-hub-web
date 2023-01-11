@@ -6,7 +6,7 @@ const randTimeOut = getRandomInt(500, 5000);
 
 export function MockUseCreateCategory(category: Category, timeout: number = randTimeOut) {
 
-  return jest.spyOn(hooks, 'useCreateCategory').mockImplementation(
+  return jest.spyOn(hooks, 'UseCreateCategory').mockImplementation(
     ()=>{
       jest.setTimeout(timeout);
       return Promise.resolve(category);
@@ -15,7 +15,7 @@ export function MockUseCreateCategory(category: Category, timeout: number = rand
 }
 
 export function MockUseCreateCategories(categories?: Category[], timeout: number = randTimeOut) {
-  return jest.spyOn(hooks, 'useGetCategories').mockImplementation(
+  return jest.spyOn(hooks, 'UseGetCategories').mockImplementation(
     () => {
       return new Promise(
         () => {
@@ -33,7 +33,7 @@ export function MockUseCreateCategories(categories?: Category[], timeout: number
 }
 
 export function MockUseDeleteCategory() {
-  return jest.spyOn(hooks, 'useDeleteCategory').mockImplementation(
+  return jest.spyOn(hooks, 'UseDeleteCategory').mockImplementation(
     async () => {
       setTimeout(() => {
         Promise.resolve();
@@ -44,7 +44,7 @@ export function MockUseDeleteCategory() {
 
 export function MockUseUpdateCategory(account?: Category) {
 
-  return jest.spyOn(hooks, 'useUpdateCategory').mockImplementation(
+  return jest.spyOn(hooks, 'UseUpdateCategory').mockImplementation(
     async () => {
       setTimeout(() => {
         Promise.resolve(account);

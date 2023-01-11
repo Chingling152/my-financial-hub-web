@@ -1,6 +1,6 @@
 import { FormEvent, useEffect, useState } from 'react';
 import { useApisContext } from '../../../contexts/api-context';
-import { useCreateCategory, useUpdateCategory } from '../../../hooks/categories-hooks';
+import { UseCreateCategory, UseUpdateCategory } from '../../../hooks/categories-hooks';
 import { Category, defaultCategory } from '../../../interfaces/category';
 import FormFieldLabel from '../../forms/form-field';
 
@@ -24,10 +24,10 @@ export default function CategoryForm(
     let cat : Category;
 
     if(category.id){
-      await useUpdateCategory(category,categoriesApi);
+      await UseUpdateCategory(category,categoriesApi);
       cat = category;
     }else{
-      cat = await useCreateCategory(category,categoriesApi);
+      cat = await UseCreateCategory(category,categoriesApi);
     }
 
     onSubmit?.(cat);

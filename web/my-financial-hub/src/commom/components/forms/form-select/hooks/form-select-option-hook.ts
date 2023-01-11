@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import UseToggleState from '../../../../hooks/components/toggle-state';
 import SelectOption from '../types/select-option';
 
 interface IFormSelectOptionHookProps{
@@ -13,6 +14,9 @@ interface IFormSelectOptionHook{
   optionsList: SelectOption[],
   selectOption: (option?: SelectOption) => void,
   deleteOption?: (option: string) => void,
+
+  isOpen: boolean,
+  toggle: ()=> void
 }
 
 export default function UseFormSelectOption(
@@ -21,18 +25,24 @@ export default function UseFormSelectOption(
     onChangeOption, onDeleteOption 
   } : IFormSelectOptionHookProps
 ) : IFormSelectOptionHook {
+  const [isOpen, toggle] = UseToggleState(false);
+
   const [optionsList, setOptionsList] = useState<SelectOption[]>(options);
   const [selectedOption, setSelectedOption] = useState(-1);
 
   const selectOption = function (option?: SelectOption) {
     const index = option === undefined ? -1 : optionsList.indexOf(option);
     setSelectedOption(index);
+    if(isOpen){
+      toggle();
+    }
     onChangeOption?.(option);
   };
 
   const deleteOption = function (option: string) {
-    setOptionsList(optionsList.filter(x => x.value != option));
     selectOption();
+    setOptionsList(optionsList.filter(x => x.value != option));
+    toggle();
     onDeleteOption?.(option);
   };
 
@@ -56,9 +66,8 @@ export default function UseFormSelectOption(
   }, [value, optionsList]);
 
   return {
-    selectedOption,
-    optionsList,
-    selectOption,
-    deleteOption
+    selectedOption, optionsList,
+    selectOption, deleteOption,
+    isOpen, toggle
   };
 }
