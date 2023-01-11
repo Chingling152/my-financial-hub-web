@@ -413,8 +413,9 @@ describe('on submit', () => {
       it('should not reset form', async () => {
         const onSubmit = jest.fn();
         const transaction = CreateTransaction({
+          status: TransactionStatus.Committed,
           amount: -100,
-          isActive: true
+          isActive: true,
         });
 
         const timeout = 100;
@@ -477,6 +478,7 @@ describe('on loading', () => {
   });
   it('should disable all fields', async () => {
     const transaction = CreateTransaction({
+      status: TransactionStatus.Committed,
       isActive: true
     });
 
