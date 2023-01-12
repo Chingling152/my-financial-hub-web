@@ -112,9 +112,8 @@ describe('on account changes', () => {
 });
 
 describe('on submit', () => {
-  jest.useFakeTimers();
-
   describe('with account id', () => {
+    jest.useFakeTimers('modern');
     it('should make a put request', () => {
       const account = CreateAccount({});
     
@@ -129,6 +128,7 @@ describe('on submit', () => {
 
   describe('without account id', () => {
     it('should make a post request', () => {
+      jest.useFakeTimers('modern');
       const account = CreateAccount({ id: '' });
     
       const meth = mockUseCreateAccount();
@@ -141,6 +141,7 @@ describe('on submit', () => {
   });
 
   it('should set all fields empty', async () => {
+    jest.useFakeTimers('modern');
     const account = CreateAccount({ id: '' });
 
     mockUseCreateAccount();
@@ -154,6 +155,7 @@ describe('on submit', () => {
   });
 
   it('should focus name field', async () => {
+    jest.useRealTimers();
     const account = CreateAccount({ id: '' });
 
     mockUseCreateAccount();
