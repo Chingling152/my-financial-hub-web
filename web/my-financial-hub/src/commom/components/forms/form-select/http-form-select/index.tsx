@@ -53,8 +53,8 @@ export default function HttpFormSelect(
               })
             )
           );
-          setLoading(false);
         }
+        setLoading(false);
       };
       getData();
     }, 
