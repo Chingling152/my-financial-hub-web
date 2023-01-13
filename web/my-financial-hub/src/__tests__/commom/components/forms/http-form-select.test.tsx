@@ -770,6 +770,16 @@ describe('on delete', () => {
 
 describe('on clear', () => {
   describe('when enabled', () => {
+    beforeEach(
+      () => {
+        jest.useFakeTimers('modern');
+      }
+    );
+    afterEach(
+      () => {
+        jest.useRealTimers();
+      }
+    );
     it('should set the value to placeholder', async () => {
       const options = CreateSelectOptions();
       const placeholder = 'placeholder';
@@ -819,6 +829,16 @@ describe('on clear', () => {
     });
   });
   describe('when disabled', () => {
+    beforeEach(
+      () => {
+        jest.useFakeTimers('modern');
+      }
+    );
+    afterEach(
+      () => {
+        jest.useRealTimers();
+      }
+    );
     it('should not change the value', async () => {
       const options = CreateSelectOptions();
       const randomOption = getRandomItem(options);

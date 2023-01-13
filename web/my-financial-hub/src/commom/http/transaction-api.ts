@@ -23,7 +23,7 @@ function getFilterQuery(filter?: TransactionFilter): string{
   let query = '';
   if(filter){
     query += createUrlQueryNumber('types',filter.types);
-    query += createUrlStartEndDateQuery(filter.startDate,filter.targetDate);
+    query += createUrlStartEndDateQuery(filter.startDate,filter.endDate);
     query += createUrlQuery('accounts',filter.accounts);
     query += createUrlQuery('categories',filter.categories);
 

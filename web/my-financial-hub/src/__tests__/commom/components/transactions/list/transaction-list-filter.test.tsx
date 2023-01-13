@@ -14,14 +14,14 @@ describe('on start', () => {
   
       expect(true).toBe(false);
     });
-    describe('with value',() => {
-      it('should set all fields as the input value', () => {
-        render(
-          <TransactionListFilter onFilter={jest.fn()} />
-        );
-    
-        expect(true).toBe(false);
-      });
+  });
+  describe('with value',() => {
+    it('should set all fields as the input value', () => {
+      render(
+        <TransactionListFilter onFilter={jest.fn()} />
+      );
+  
+      expect(true).toBe(false);
     });
   });
 });

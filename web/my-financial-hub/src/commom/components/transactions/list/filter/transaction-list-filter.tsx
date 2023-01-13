@@ -1,12 +1,12 @@
 import { useState } from 'react';
 
+import { useApisContext } from '../../../../contexts/api-context';
+
 import { TransactionFilter } from '../types/transaction-filter';
+import { TransactionType } from '../../../../interfaces/transaction';
 
 import HttpFormSelect from '../../../forms/form-select/http-form-select';
-
-import { useApisContext } from '../../../../contexts/api-context';
 import EnumFormSelect from '../../../forms/form-select/enum-form-select';
-import { TransactionType } from '../../../../interfaces/transaction';
 
 interface ITransactionListFilterProps {
   defaultFilter?: TransactionFilter,
@@ -119,15 +119,15 @@ export default function TransactionListFilter({defaultFilter = {} , onFilter }: 
         </div>
 
         <div>
-          <label>Target Date</label>
+          <label>End Date</label>
           <input
-            title='targetdate'
+            title='endDate'
             type='date'
             onChange={
               (e) => {
                 setFilters({
                   ...filter,
-                  targetDate: new Date(Date.parse(e.target.value))
+                  endDate: new Date(Date.parse(e.target.value))
                 });
               }
             }

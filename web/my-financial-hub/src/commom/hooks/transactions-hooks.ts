@@ -1,6 +1,4 @@
-import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { TransactionFilter } from '../components/transactions/list/types/transaction-filter';
-import { useApisContext } from '../contexts/api-context';
 
 import TransactionApi, { FetchTransactions } from '../http/transaction-api';
 import { Transaction } from '../interfaces/transaction';
@@ -23,49 +21,6 @@ export async function UseUpdateTransaction(transaction: Transaction, api: Transa
   } catch (error) {
     console.error(error);
   }
-}
-
-export type TransactionFetchState = {
-  transactions: [Transaction[], Dispatch<SetStateAction<Transaction[]>>],
-  isLoading: boolean,
-  hasError: boolean
-}
-
-/**
- * @deprecated use UseGetTransactions (this hook needs improvement)
- */
-export function useFetchTransactions(): TransactionFetchState{
-  const [transactions, setTransations] = useState<Transaction[]>([]);
-  const [isLoading, setLoading] = useState<boolean>(true);
-  const [hasError,setHasError] = useState<boolean>(false);
-  const { transactionsApi } = useApisContext();
-  
-  useEffect(
-    () => {
-      const getTransactions = async function () {
-        setLoading(true);
-        try {
-          const transactionsResult = await transactionsApi.GetAllAsync();
-          setTransations(transactionsResult.data);
-        } catch (error) {
-          console.error(error);
-          setHasError(true);
-          return Promise.reject();
-        }    
-    
-        setLoading(false);
-      };
-
-      getTransactions();
-    },
-    [transactionsApi]
-  );
-
-  return { 
-    transactions: [transactions, setTransations], 
-    isLoading,
-    hasError
-  };
 }
 
 export async function UseGetTransactions(filter?: TransactionFilter): Promise<Transaction[]> {

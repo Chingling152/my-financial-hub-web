@@ -176,58 +176,35 @@ describe('on change filter', () => {
       jest.useFakeTimers('modern');
     }
   );
-
   afterEach(() => {
     jest.useRealTimers();
   });
-  it('should render the filtered list', async () => {
-    const transactions = CreateTransactions();      
-    const timeout = 100;
-    const hook = MockUseGetTransactions(transactions, 0);
-
-    const filter = {
-      startDate: new Date()
-    };
-
-    act(
-      () => {
-        const { rerender } = render(
-          <TransactionList/>
-        );
-        jest.advanceTimersByTime(timeout + 1);
-        
-        rerender(
-          <TransactionList filter={filter} />
-        );
-        jest.advanceTimersByTime(timeout + 1);
-        
-        
-        filter.startDate = new Date(2020, 1, 1);
-        rerender(
-          <TransactionList filter={{
-            startDate: new Date()
-          }} />
-        );
-        jest.advanceTimersByTime(timeout + 1);
-      }
-    );
-
-    expect(hook).toBeCalledTimes(2);
-  });
-
   it('should call get transactions hook again', () => {
     const transactions = CreateTransactions();
     const timeout = 100;
     const hook = MockUseGetTransactions(transactions, timeout);
-
+    const filter = {
+      startDate: new Date()
+    };
+    const { rerender } = render(
+      <TransactionList />
+    );
     act(
       () => {
-        render(
-          <TransactionList />
-        );
         jest.advanceTimersByTime(timeout + 1);
       }
     );
+
+    filter.startDate = new Date(2020, 1, 1);
+    rerender(
+      <TransactionList filter={filter} />
+    );
+    act(
+      () => {
+        jest.advanceTimersByTime(timeout + 1);
+      }
+    );
+
     expect(hook).toBeCalledTimes(2);
   });
 });

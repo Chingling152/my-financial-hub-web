@@ -8,16 +8,17 @@ import TransactionList from '../../commom/components/transactions/list/transacti
 import TransactionListFilter from '../../commom/components/transactions/list/filter/transaction-list-filter';
 
 export default function TransactionsPage() {
-  const [transaction,setTransactions] = useState<Transaction>(defaultTransaction);
+  const [transaction,setTransaction] = useState<Transaction>(defaultTransaction);
   const [transactionFilter,setTransactionFilter] = useState<TransactionFilter>({} as TransactionFilter);
 
   const submitForm = function(tran: Transaction): void{
-    setTransactions(defaultTransaction);
+    //TODO: add to list
+    setTransaction(defaultTransaction);
     setTransactionFilter({});
   };
 
   const selectTransaction = function(tran: Transaction): void{
-    setTransactions(tran);
+    setTransaction(tran);
   };
 
   const filterTransactions = function(transactionFilter: TransactionFilter): void{
