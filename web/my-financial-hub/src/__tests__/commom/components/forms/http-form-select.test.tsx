@@ -767,3 +767,90 @@ describe('on delete', () => {
     });
   });
 });
+
+describe('on clear', () => {
+  describe('when enabled', () => {
+    it('should set the value to placeholder', async () => {
+      const options = CreateSelectOptions();
+      const placeholder = 'placeholder';
+      const timeout = 10;
+      const api = CreateApi<MockItem>({
+        GetAllResult: {
+          ...defaultMockItemResult,
+          data: options.map(x => ({ id: x.value, name: x.label } as MockItem))
+        },
+        GetAllTimeout:timeout
+      });
+      const { getByText } = render(
+        <HttpFormSelect
+          api={api}
+          placeholder={placeholder}
+          disabled={false}
+        />
+      );
+      await act(
+        async () =>{
+          jest.advanceTimersByTime(timeout + 1);
+        }
+      );
+      act(
+        () => {
+          const button = getByText(placeholder);
+          userEvent.click(button);
+        }
+      );
+
+      act(
+        () => {
+          const randomOption = getRandomItem(options);
+          const option = getByText(randomOption.label);
+          userEvent.click(option);
+        }
+      );
+
+      act(
+        () => {
+          const button = getByText('Clear');
+          userEvent.click(button);
+        }
+      );
+      const button = getByText(placeholder);
+      expect(button).toBeInTheDocument();
+    });
+  });
+  describe('when disabled', () => {
+    it('should not change the value', async () => {
+      const options = CreateSelectOptions();
+      const randomOption = getRandomItem(options);
+      const timeout = 10;
+      const api = CreateApi<MockItem>({
+        GetAllResult: {
+          ...defaultMockItemResult,
+          data: options.map(x => ({ id: x.value, name: x.label } as MockItem))
+        },
+        GetAllTimeout:timeout
+      });
+      const { getByText } = render(
+        <HttpFormSelect
+          api={api}
+          placeholder={'placeholder'}
+          disabled={true}
+          value={randomOption.value}
+        />
+      );
+      await act(
+        async () =>{
+          jest.advanceTimersByTime(timeout + 1);
+        }
+      );
+      act(
+        () => {
+          const button = getByText('Clear');
+          userEvent.click(button);
+        }
+      );
+      const button = getByText(randomOption.label);
+      expect(button).toBeInTheDocument();
+    });
+  });
+});

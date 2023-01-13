@@ -270,3 +270,66 @@ describe('on delete', () => {
     expect(onDeleteOption).toBeCalledTimes(1);
   });
 });
+
+describe('on clear', () => {
+  describe('when enabled', () => {
+    it('should set the value to placeholder', () => {
+      const options = CreateSelectOptions();
+      const placeholder = 'placeholder';
+
+      const { getByText } = render(
+        <FormSelect
+          placeholder={placeholder}
+          disabled={false}
+          options={options}
+        />
+      );
+      act(
+        () => {
+          const button = getByText(placeholder);
+          userEvent.click(button);
+        }
+      );
+
+      act(
+        () => {
+          const randomOption = getRandomItem(options);
+          const option = getByText(randomOption.label);
+          userEvent.click(option);
+        }
+      );
+
+      act(
+        () => {
+          const button = getByText('Clear');
+          userEvent.click(button);
+        }
+      );
+      const button = getByText(placeholder);
+      expect(button).toBeInTheDocument();
+    });
+  });
+  describe('when disabled', () => {
+    it('should not change the value', () => {
+      const options = CreateSelectOptions();
+      const randomOption = getRandomItem(options);
+
+      const { getByText } = render(
+        <FormSelect
+          value={randomOption.value}
+          disabled={true}
+          options={options}
+        />
+      );
+
+      act(
+        () => {
+          const button = getByText('Clear');
+          userEvent.click(button);
+        }
+      );
+      const button = getByText(randomOption.label);
+      expect(button).toBeInTheDocument();
+    });
+  });
+});
