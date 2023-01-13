@@ -10,6 +10,11 @@ type ApisContext = {
   transactionsApi: TransactionApi,
 };
 
+type ApiContextProps = { 
+  children?: JSX.Element | JSX.Element[],
+  context?: ApisContext
+}
+
 const defaultContext = {
   accountsApi:    new AccountApi(),
   categoriesApi:  new CategoryApi(),
@@ -19,15 +24,15 @@ const defaultContext = {
 const ApisContext = createContext<ApisContext>(defaultContext);
 
 //EXPORT
-export function ApisContextProvider({ children }: { children?: JSX.Element | JSX.Element[] }) {
+export function ApisContextProvider({ children, context = defaultContext }: ApiContextProps) {
   return (
-    <ApisContext.Provider value={defaultContext}>
+    <ApisContext.Provider value={context}>
       {children}
     </ApisContext.Provider>
   );
 }
 
-export function useApisContext(){
+export function useApisContext(): ApisContext{
   const context = useContext(ApisContext);
 
   if (context === undefined) {

@@ -3,7 +3,7 @@ import { act } from 'react-dom/test-utils';
 import userEvent from '@testing-library/user-event';
 
 import { CreateCategory } from '../../../../../__mocks__/types/category-builder';
-import { MockUseCreateCategory } from '../../../../../__mocks__/hooks/categories-hook';
+import { MockUseCreateCategory, MockUseUpdateCategory } from '../../../../../__mocks__/hooks/categories-hook';
 
 import CategoryForm from '../../../../../commom/components/categories/form/category-form';
 
@@ -93,98 +93,194 @@ describe('on submit', () => {
   afterEach(() => {
     jest.useRealTimers();
   });
-
-  describe('valid category', () => {
-    it('should call "onSubmit" method', async () => {
-      const onSubmit = jest.fn();
-      const category = CreateCategory();
-      category.id = undefined;
-
-      const timeout = 100;
-      MockUseCreateCategory(category, timeout);
-
-      const { findByText } = render(
-        <CategoryForm formData={category} onSubmit={onSubmit} />
-      );
-
-      await act(
-        async ()=>{
-          const input = await findByText('Create');
-          userEvent.click(input);
-    
-          jest.advanceTimersByTime(timeout + 1);
-        }
-      );
+  describe('create category', () => {
+    describe('valid category', () => {
+      it('should call "onSubmit" method', async () => {
+        const onSubmit = jest.fn();
+        const category = CreateCategory();
+        category.id = undefined;
+  
+        const timeout = 100;
+        MockUseCreateCategory(category, timeout);
+  
+        const { findByText } = render(
+          <CategoryForm formData={category} onSubmit={onSubmit} />
+        );
+  
+        await act(
+          async ()=>{
+            const input = await findByText('Create');
+            userEvent.click(input);
       
-      expect(onSubmit).toBeCalledTimes(1);
+            jest.advanceTimersByTime(timeout + 1);
+          }
+        );
+        
+        expect(onSubmit).toBeCalledTimes(1);
+      });
+  
+      it('should reset form', async () => {
+        const onSubmit = jest.fn();
+        const category = CreateCategory();
+        category.id = undefined;
+  
+        const timeout = 100;
+        MockUseCreateCategory(category, timeout);
+  
+        const { findByText, getByTitle } = render(
+          <CategoryForm formData={category} onSubmit={onSubmit} />
+        );
+  
+        await act(
+          async () => {
+            const input = await findByText('Create');
+            userEvent.click(input);
+            jest.advanceTimersByTime(timeout + 1);
+          }
+        );
+  
+        const nameInput = getByTitle('name');
+        expect(nameInput).toHaveValue('');
+  
+        const descriptionInput = getByTitle('description');
+        expect(descriptionInput).toHaveValue('');
+  
+        const isActiveInput = getByTitle('isActive');
+        expect(isActiveInput).not.toBeChecked();
+      });
     });
-
-    it('should reset form', async () => {
-      const onSubmit = jest.fn();
-      const category = CreateCategory();
-      category.id = undefined;
-
-      const timeout = 100;
-      MockUseCreateCategory(category, timeout);
-
-      const { findByText, getByTitle } = render(
-        <CategoryForm formData={category} onSubmit={onSubmit} />
-      );
-
-      await act(
-        async () => {
-          const input = await findByText('Create');
-          userEvent.click(input);
-          jest.advanceTimersByTime(timeout + 1);
-        }
-      );
-
-      const nameInput = getByTitle('name');
-      expect(nameInput).toHaveValue('');
-
-      const descriptionInput = getByTitle('description');
-      expect(descriptionInput).toHaveValue('');
-
-      const isActiveInput = getByTitle('isActive');
-      expect(isActiveInput).not.toBeChecked();
+    describe('invalid category', () => {
+      it('should not call "onSubmit" method', () => {
+        const onSubmit = jest.fn();
+        const { getByText } = render(
+          <CategoryForm onSubmit={onSubmit} />
+        );
+  
+        act(
+          () => {
+            const input = getByText('Create');
+            userEvent.click(input);
+          }
+        );
+  
+        expect(onSubmit).not.toHaveBeenCalled();
+      });
+  
+      it('should not start the loading', async () => {
+        const onSubmit = jest.fn();
+        const category = CreateCategory();
+        category.id = undefined;
+  
+        MockUseCreateCategory(category);
+  
+        const { findByText } = render(
+          <CategoryForm formData={category} onSubmit={onSubmit} />
+        );
+  
+        await act(
+          async () => {
+            const input = await findByText('Create');
+            userEvent.click(input);
+            expect(input).not.toBeDisabled();
+          }
+        );
+      });
     });
   });
 
-  describe('invalid category', () => {
-    it('should not call "onSubmit" method', () => {
-      const onSubmit = jest.fn();
-      const { getByText } = render(
-        <CategoryForm onSubmit={onSubmit} />
-      );
-
-      act(
-        () => {
-          const input = getByText('Create');
-          userEvent.click(input);
-        }
-      );
-
-      expect(onSubmit).not.toHaveBeenCalled();
+  describe('update category', () => {
+    describe('valid category', () => {
+      it('should call "onSubmit" method', async () => {
+        const onSubmit = jest.fn();
+        const category = CreateCategory();
+  
+        const timeout = 100;
+        MockUseUpdateCategory(category, timeout);
+  
+        const { findByText } = render(
+          <CategoryForm formData={category} onSubmit={onSubmit} />
+        );
+  
+        await act(
+          async ()=>{
+            const input = await findByText('Update');
+            userEvent.click(input);
+      
+            jest.advanceTimersByTime(timeout + 1);
+          }
+        );
+        
+        expect(onSubmit).toBeCalledTimes(1);
+      });
+  
+      it('should reset form', async () => {
+        const onSubmit = jest.fn();
+        const category = CreateCategory();
+  
+        const timeout = 100;
+        MockUseUpdateCategory(category, timeout);
+  
+        const { findByText, getByTitle } = render(
+          <CategoryForm formData={category} onSubmit={onSubmit} />
+        );
+  
+        await act(
+          async () => {
+            const input = await findByText('Update');
+            userEvent.click(input);
+            jest.advanceTimersByTime(timeout + 1);
+          }
+        );
+  
+        const nameInput = getByTitle('name');
+        expect(nameInput).toHaveValue('');
+  
+        const descriptionInput = getByTitle('description');
+        expect(descriptionInput).toHaveValue('');
+  
+        const isActiveInput = getByTitle('isActive');
+        expect(isActiveInput).not.toBeChecked();
+      });
     });
-
-    it('should not start the loading', async () => {
-      const onSubmit = jest.fn();
-      const category = CreateCategory();
-      category.id = undefined;
-
-      MockUseCreateCategory(category);
-
-      const { findByText } = render(
-        <CategoryForm formData={category} onSubmit={onSubmit} />
-      );
-
-      await act(
-        async () => {
-          const input = await findByText('Create');
-          userEvent.click(input);
-          expect(input).not.toBeDisabled();
-        }
-      );
+  
+    describe('invalid category', () => {
+      it('should not call "onSubmit" method', () => {
+        const category = CreateCategory({
+          name: ''
+        });
+        const onSubmit = jest.fn();
+        const { getByText } = render(
+          <CategoryForm formData={category} onSubmit={onSubmit} />
+        );
+  
+        act(
+          () => {
+            const input = getByText('Update');
+            userEvent.click(input);
+          }
+        );
+  
+        expect(onSubmit).not.toHaveBeenCalled();
+      });
+  
+      it('should not start the loading', async () => {
+        const onSubmit = jest.fn();
+        const category = CreateCategory();
+  
+        MockUseUpdateCategory(category);
+  
+        const { findByText } = render(
+          <CategoryForm formData={category} onSubmit={onSubmit} />
+        );
+  
+        await act(
+          async () => {
+            const input = await findByText('Update');
+            userEvent.click(input);
+            expect(input).not.toBeDisabled();
+          }
+        );
+      });
     });
   });
 });

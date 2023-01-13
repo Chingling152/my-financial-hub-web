@@ -5,6 +5,8 @@ import Api from '../../../../http/api';
 import SelectOption from '../types/select-option';
 
 interface IHttpFormSelectProps{
+  id?: string,
+  className?: string,
   api: Api<any>,
   value?: string,
   placeholder?: string,
@@ -15,6 +17,7 @@ interface IHttpFormSelectProps{
 
 export default function HttpFormSelect(
   {
+    id, className,
     api,value,
     disabled, placeholder = '',
     onChangeOption,onDeleteOption
@@ -63,6 +66,8 @@ export default function HttpFormSelect(
 
   return (
     <FormSelect 
+      id={id}
+      className={className}
       options={options}
       value={value}
       disabled={disabled || isLoading}

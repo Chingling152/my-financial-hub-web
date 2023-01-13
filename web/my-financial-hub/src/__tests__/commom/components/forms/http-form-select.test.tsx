@@ -320,6 +320,16 @@ describe('on click', () => {
 });
 
 describe('on select', () => {
+  beforeEach(
+    () => {
+      jest.useFakeTimers('modern');
+    }
+  );
+  afterEach(
+    () => {
+      jest.useRealTimers();
+    }
+  );
   it('should set the selected value on the default value', async () => {
     const timeout = 10;
     const options = CreateSelectOptions();

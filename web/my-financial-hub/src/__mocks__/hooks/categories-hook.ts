@@ -14,7 +14,7 @@ export function MockUseCreateCategory(category: Category, timeout: number = rand
   );
 }
 
-export function MockUseCreateCategories(categories?: Category[], timeout: number = randTimeOut) {
+export function MockUseGetCategories(categories?: Category[], timeout: number = randTimeOut) {
   return jest.spyOn(hooks, 'UseGetCategories').mockImplementation(
     () => {
       return new Promise(
@@ -42,13 +42,13 @@ export function MockUseDeleteCategory() {
   );
 }
 
-export function MockUseUpdateCategory(account?: Category) {
+export function MockUseUpdateCategory(category?: Category, timeout?: number) {
 
   return jest.spyOn(hooks, 'UseUpdateCategory').mockImplementation(
     async () => {
       setTimeout(() => {
-        Promise.resolve(account);
-      }, randTimeOut);
+        Promise.resolve(category);
+      }, timeout ?? randTimeOut);
     }
   );
 }

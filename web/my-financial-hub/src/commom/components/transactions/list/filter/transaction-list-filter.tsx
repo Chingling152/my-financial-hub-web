@@ -28,11 +28,13 @@ export default function TransactionListFilter({defaultFilter = {} , onFilter }: 
         }
       }>
         <div>
-          <label>Accounts</label>
+          <label htmlFor='transaction-filter__accounts'>Accounts</label>
           <HttpFormSelect
             api={accountsApi}
+            id='transaction-filter__accounts'
             placeholder='Select an account'
             disabled={false}
+            value={filter?.accounts?.[0]}
             onChangeOption={
               (selectedOption) => {
                 if (selectedOption?.value) {
@@ -53,60 +55,68 @@ export default function TransactionListFilter({defaultFilter = {} , onFilter }: 
           />
         </div>
 
-        <label>Categories</label>
-        <HttpFormSelect
-          api={categoriesApi}
-          placeholder='Select an category'
-          disabled={false}
-          onChangeOption={
-            (selectedOption) => {
-              if (selectedOption?.value) {
-                setFilters({
-                  ...filter,
-                  categories: [
-                    selectedOption?.value
-                  ]
-                });
-              }else{
-                setFilters({
-                  ...filter,
-                  categories: []
-                });
+        <div>
+          <label htmlFor='transaction-filter__categories'>Categories</label>
+          <HttpFormSelect
+            id='transaction-filter__categories'
+            api={categoriesApi}
+            placeholder='Select a category'
+            value={filter?.categories?.[0]}
+            disabled={false}
+            onChangeOption={
+              (selectedOption) => {
+                if (selectedOption?.value) {
+                  setFilters({
+                    ...filter,
+                    categories: [
+                      selectedOption?.value
+                    ]
+                  });
+                }else{
+                  setFilters({
+                    ...filter,
+                    categories: []
+                  });
+                }
               }
             }
-          }
-        />
-
-        <label>Type</label>
-        <EnumFormSelect
-          options={TransactionType}
-          placeholder='Select a type'
-          disabled={true}
-          onChangeOption={
-            (selectedOption) => {
-              if (selectedOption) {
-                console.log(selectedOption);
-                setFilters({
-                  ...filter,
-                  types: [
-                    selectedOption
-                  ]
-                });
-              }else{
-                setFilters({
-                  ...filter,
-                  types: []
-                });
-              }
-            }
-          }
-        />
+          />
+        </div>
 
         <div>
-          <label>Start Date</label>
+          <label>Type</label>
+          <EnumFormSelect
+            options={TransactionType}
+            placeholder='Select a type'
+            disabled={true}
+            onChangeOption={
+              (selectedOption) => {
+                if (selectedOption) {
+                  console.log(selectedOption);
+                  setFilters({
+                    ...filter,
+                    types: [
+                      selectedOption
+                    ]
+                  });
+                }else{
+                  setFilters({
+                    ...filter,
+                    types: []
+                  });
+                }
+              }
+            }
+          />
+        </div>
+
+        <div>
+          <label htmlFor='transaction-filter__startDate'>Start Date</label>
           <input
+            id='transaction-filter__startDate'
             title='startDate'
             type='date'
+            value={filter.startDate?.toISOString()}
             onChange={
               (e) => {
                 setFilters({
@@ -119,10 +129,12 @@ export default function TransactionListFilter({defaultFilter = {} , onFilter }: 
         </div>
 
         <div>
-          <label>End Date</label>
+          <label htmlFor='transaction-filter__endDate'>End Date</label>
           <input
+            id='transaction-filter__endDate'
             title='endDate'
             type='date'
+            value={filter.endDate?.toISOString()}
             onChange={
               (e) => {
                 setFilters({

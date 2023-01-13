@@ -5,10 +5,14 @@ import SelectOption from './types/select-option';
 import UseFormSelectOption from './hooks/form-select-option-hook';
 
 type FormSelectProps = {
+  id?: string,
+  className?:string,
+  
   placeholder?: string,
   value?: string,
   disabled: boolean,
-  options: SelectOption[]
+  options: SelectOption[],
+
   onChangeOption?: (selectedOption?: SelectOption) => void | Promise<void>,
   onDeleteOption?: (selectedOption?: string) => void | Promise<void>,
 }
@@ -16,6 +20,7 @@ type FormSelectProps = {
 //TODO: change to https://react-select.com/components
 export default function FormSelect(
   {
+    id,className,
     disabled, placeholder = '',
     value, options,
     onChangeOption, onDeleteOption
@@ -40,9 +45,10 @@ export default function FormSelect(
           type='button'
           aria-haspopup='listbox'
           aria-expanded={isOpen}
-          className={isOpen ? 'expanded' : ''}
+          id={id}
+          className={isOpen ? 'expanded ' + className : className}
           disabled={disabled}
-          onClick={() => toggle()}
+          onClick={toggle}
         >
           {selectedOption == -1 ? placeholder : optionsList[selectedOption].label}
         </button>

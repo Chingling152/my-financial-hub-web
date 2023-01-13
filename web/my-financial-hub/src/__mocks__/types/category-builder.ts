@@ -17,7 +17,7 @@ export function CreateCategory(args? :CategoryBuilderArgs) : Category {
   };
 }
 
-export function CreateCategories(args:CategoryBuilderArgs) : Category[]{
+export function CreateCategories(args?:CategoryBuilderArgs) : Category[]{
   const count = faker.datatype.number(
     {
       min: 1,

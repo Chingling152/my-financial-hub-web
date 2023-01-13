@@ -19,7 +19,7 @@ export function CreateAccount(args?:AccountBuilderArgs) : Account {
   } as Account;
 }
 
-export function CreateAccounts(args:AccountBuilderArgs) : Account[]{
+export function CreateAccounts(args?:AccountBuilderArgs) : Account[]{
   const count = faker.datatype.number(
     {
       min: 1,
