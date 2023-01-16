@@ -8,7 +8,6 @@ import CategoryForm from '../../commom/components/categories/form/category-form'
 import SelectOption from '../../commom/components/forms/form-select/types/select-option';
 import HttpFormSelect from '../../commom/components/forms/form-select/http-form-select';
 
-//TODO create APIFormSelect
 export default function CategoriesPage() {
   const { categoriesApi } = useApisContext();
   

@@ -4,13 +4,13 @@ import { UseCreateCategory, UseUpdateCategory } from '../../../hooks/categories-
 import { Category, defaultCategory } from '../../../interfaces/category';
 import FormFieldLabel from '../../forms/form-field';
 
-type FormProps ={
+export type CategoryFormProps ={
   formData? : Category,
   onSubmit? : (category:Category) => void
 };
 //TODO: use callback
 export default function CategoryForm( 
-  {formData = defaultCategory, onSubmit} : FormProps
+  {formData = defaultCategory, onSubmit} : CategoryFormProps
 ) {
   const [category, setCategory] = useState<Category>(formData);
   const [isLoading, setLoading] = useState(false);
@@ -59,7 +59,7 @@ export default function CategoryForm(
                 name: event.target.value
               })
             }
-            required={true}
+            required
           />
         </FormFieldLabel>
       </div>

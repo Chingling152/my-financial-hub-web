@@ -1,6 +1,5 @@
-import { render } from '@testing-library/react';
+import { render, act } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { act } from 'react-dom/test-utils';
 import EnumFormSelect from '../../../../commom/components/forms/form-select/enum-form-select';
 import { enumToString } from '../../../../commom/utils/enum-utils';
 
