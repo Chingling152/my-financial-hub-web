@@ -1,9 +1,9 @@
-import { RenderResult, act } from '@testing-library/react';
+import { act, queryByText } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import assert from 'assert';
 
 interface SubmitFormProp{
-  form: RenderResult, 
+  form: HTMLElement, 
   createButtonText?: string, 
   updateButtonText?: string,
   advanceTime?: number
@@ -17,7 +17,7 @@ export async function SubmitForm(
     advanceTime = 10 
   } : SubmitFormProp
 ): Promise<void>{
-  const createButton = form.queryByText(createButtonText);
+  const createButton = queryByText(form, createButtonText);
 
   if(createButton){
     await act(
@@ -27,7 +27,7 @@ export async function SubmitForm(
       }
     );
   }else{
-    const updateButton = form.queryByText(updateButtonText);
+    const updateButton = queryByText(form, updateButtonText);
     if(updateButton){
       await act(
         async ()=>{

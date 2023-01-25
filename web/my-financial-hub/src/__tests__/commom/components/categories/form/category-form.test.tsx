@@ -4,7 +4,7 @@ import userEvent from '@testing-library/user-event';
 import { CreateCategory } from '../../../../../__mocks__/types/category-builder';
 import { MockUseCreateCategory, MockUseUpdateCategory } from '../../../../../__mocks__/hooks/categories-hook';
 
-import RenderCategoryForm from '../../../../../__mocks__/forms/category-form';
+import RenderCategoryForm from '../../../../../__mocks__/forms/category-form/category-form';
 
 describe('on render', () => {
   describe('default', () => {
@@ -114,7 +114,24 @@ describe('on submit', () => {
 
         expect(onSubmit).not.toHaveBeenCalled();
       });
+      
+      it('should not reset form', async () => {
+        const category = CreateCategory();
+        const timeout = 100;
+        MockUseUpdateCategory(category, timeout);
   
+        const { actions, fields } = RenderCategoryForm({formData: category});  
+        await actions.update(timeout);
+
+        expect(fields.name()).toHaveValue(category.name);
+        expect(fields.description()).toHaveValue(category.description);
+        if(category.isActive){
+          expect(fields.isActive()).toBeChecked();
+        }else{
+          expect(fields.isActive()).not.toBeChecked();
+        }
+      });
+
       it('should not start the loading', async () => {
         const category = CreateCategory();
         category.id = undefined;
@@ -158,7 +175,6 @@ describe('on submit', () => {
         expect(fields.isActive()).not.toBeChecked();
       });
     });
-  
     describe('invalid category', () => {
       it('should not call "onSubmit" method', async () => {
         const category = CreateCategory({ name: '' });
@@ -177,6 +193,23 @@ describe('on submit', () => {
         expect(onSubmit).not.toHaveBeenCalled();
       });
    
+      it('should not reset form', async () => {
+        const category = CreateCategory();
+        const timeout = 100;
+        MockUseUpdateCategory(category, timeout);
+  
+        const { actions, fields } = RenderCategoryForm({formData: category});  
+        await actions.update(timeout);
+
+        expect(fields.name()).toHaveValue(category.name);
+        expect(fields.description()).toHaveValue(category.description);
+        if(category.isActive){
+          expect(fields.isActive()).toBeChecked();
+        }else{
+          expect(fields.isActive()).not.toBeChecked();
+        }
+      });
+
       it('should not start the loading', async () => {
         const onSubmit = jest.fn();
         const category = CreateCategory({ name: '' });

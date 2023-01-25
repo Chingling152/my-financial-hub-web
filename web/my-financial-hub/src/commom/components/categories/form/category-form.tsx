@@ -97,7 +97,11 @@ export default function CategoryForm(
           />
         </FormFieldLabel>
       </div>
-      <button disabled={isLoading} type='submit'>{!isLoading? category.id? 'Update' : 'Create' : 'Loading'}</button>
+      <button disabled={isLoading} type='submit'>
+        {
+          !isLoading? category.id? 'Update' : 'Create' : 'Loading'
+        }
+      </button>
     </form>
   );
 }
