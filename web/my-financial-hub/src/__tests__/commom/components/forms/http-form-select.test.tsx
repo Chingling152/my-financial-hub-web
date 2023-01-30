@@ -1,9 +1,8 @@
-import { render } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
-import { act } from 'react-dom/test-utils';
+import HttpFormSelect from '../../../../commom/components/forms/form-select/http-form-select';
 
 import { CreateSelectOptions } from '../../../../__mocks__/forms/select-option-builder';
-import HttpFormSelect from '../../../../commom/components/forms/form-select/http-form-select';
+import { RenderFormSelectResult } from '../../../../__mocks__/forms/form-select/form-select';
+import { AdvanceTime } from '../../../../__mocks__/utils/time-utils';
 
 import { getRandomItem } from '../../../../__mocks__/utils/array-utils';
 import { CreateApi } from '../../../../__mocks__/http/api-builder';
@@ -40,14 +39,14 @@ describe('on render', () => {
       });
 
       const expectedResult = 'placeholder';
-      const { getByText } = render(
+      const { fields } = RenderFormSelectResult(
         <HttpFormSelect
           api={api}
           placeholder={expectedResult}
           disabled={false}
         />
       );
-      const val = getByText(expectedResult);
+      const val = fields.toggleButton(expectedResult);
 
       expect(val).toBeInTheDocument();
       expect(val).toHaveTextContent(expectedResult);
@@ -63,11 +62,11 @@ describe('on render', () => {
           ...defaultMockItemResult,
           data: options.map(x => ({ id: x.value, name: x.label } as MockItem))
         },
-        GetAllTimeout: timeout
+        Timeout: timeout
       });
 
       const expectedResult = options[0];
-      const { getByText } = render(
+      const { fields } = RenderFormSelectResult(
         <HttpFormSelect
           api={api}
           value={expectedResult.value}
@@ -75,12 +74,8 @@ describe('on render', () => {
         />
       );
 
-      await act(
-        async ()=>{
-          jest.advanceTimersByTime(timeout + 1);
-        }
-      );
-      const val = getByText(expectedResult.label);
+      await AdvanceTime(timeout);
+      const val = fields.toggleButton(expectedResult.label);
 
       expect(val).toBeInTheDocument();
       expect(val).toHaveTextContent(expectedResult.label);
@@ -94,22 +89,18 @@ describe('on render', () => {
           ...defaultMockItemResult,
           data: options.map(x => ({ id: x.value, name: x.label } as MockItem))
         },
-        GetAllTimeout: timeout
+        Timeout: timeout
       });
 
       const expectedResult = options[0];
-      render(
+      RenderFormSelectResult(
         <HttpFormSelect
           api={api}
           value={expectedResult.value}
           disabled={false}
         />
       );
-      await act(
-        async ()=>{
-          jest.advanceTimersByTime(timeout + 1);
-        }
-      );
+      await AdvanceTime(timeout);
 
       expect(api.GetAllAsync).toBeCalledTimes(1);
     });
@@ -120,12 +111,16 @@ describe('on render', () => {
       const api = CreateApi<MockItem>({
         GetAllResult: defaultMockItemResult
       });
-      const { queryByText } = render(
+      const placeholder = 'placeholder';
+      const { queryByText, actions } = RenderFormSelectResult(
         <HttpFormSelect
+          placeholder={placeholder}
           api={api}
           disabled={false}
         />
       );
+
+      actions.toggleSelect(placeholder);
 
       const res = queryByText('Delete');
       expect(res).not.toBeInTheDocument();
@@ -150,10 +145,10 @@ describe('on click', () => {
       const placeholder = 'placeholder';
       const api = CreateApi<MockItem>({
         GetAllResult:  defaultMockItemResult,
-        GetAllTimeout: timeout
+        Timeout: timeout
       });
 
-      const { queryByRole, getByText } = render(
+      const { fields, actions } = RenderFormSelectResult(
         <HttpFormSelect
           api={api}
           placeholder={placeholder}
@@ -161,22 +156,14 @@ describe('on click', () => {
         />
       );
 
-      await act(
-        async () =>{
-          jest.advanceTimersByTime(timeout + 1);
-        }
-      );
+      await AdvanceTime(timeout);
       
-      let listbox = queryByRole('listbox');
+      let listbox = fields.queryOptions();
       expect(listbox).not.toBeInTheDocument();
-      await act(
-        async () =>{
-          const button = getByText(placeholder);
-          userEvent.click(button);
-        }
-      );
       
-      listbox = queryByRole('listbox');
+      actions.toggleSelect(placeholder, timeout);
+      
+      listbox = fields.queryOptions();
       expect(listbox).toBeInTheDocument();
     });
     it('should call the get request', () => {
@@ -185,7 +172,7 @@ describe('on click', () => {
         GetAllResult: defaultMockItemResult
       });
 
-      render(
+      RenderFormSelectResult(
         <HttpFormSelect
           api={api}
           placeholder={placeholder}
@@ -205,32 +192,24 @@ describe('on click', () => {
           ...defaultMockItemResult,
           data: options.map(x => ({ id: x.value, name: x.label } as MockItem))
         },
-        GetAllTimeout:timeout
+        Timeout:timeout
       });
 
-      const { queryByRole, getByText } = render(
+      const { fields, actions } = RenderFormSelectResult(
         <HttpFormSelect
           api={api}
           placeholder={placeholder}
           disabled={false}
         />
       );
-      await act(
-        async () =>{
-          jest.advanceTimersByTime(timeout + 1);
-        }
-      );
+      await AdvanceTime(timeout);
 
-      const listbox = queryByRole('listbox');
+      const listbox = fields.queryOptions();
       expect(listbox).not.toBeInTheDocument();
-      await act(
-        async () =>{
-          const button = getByText(placeholder);
-          userEvent.click(button);
-        }
-      );
 
-      const childrenCount = queryByRole('listbox')?.childElementCount;
+      actions.toggleSelect(placeholder);
+
+      const childrenCount = fields.queryOptions()?.childElementCount;
       expect(childrenCount).toBe(options.length);
     });
     it('should call the onChangeOption', async () => {
@@ -241,12 +220,12 @@ describe('on click', () => {
           ...defaultMockItemResult,
           data: options.map(x => ({ id: x.value, name: x.label } as MockItem))
         },
-        GetAllTimeout:timeout
+        Timeout:timeout
       });
       
       const placeholder = 'placeholder';
       const onChangeOption = jest.fn();
-      const { getByText } = render(
+      const { actions } = RenderFormSelectResult(
         <HttpFormSelect
           api={api}
           placeholder={placeholder}
@@ -255,26 +234,10 @@ describe('on click', () => {
         />
       );
 
-      await act(
-        async () =>{
-          jest.advanceTimersByTime(timeout + 1);
-        }
-      );
+      await AdvanceTime(timeout);
 
-      await act(
-        async () =>{
-          const button = getByText(placeholder);
-          userEvent.click(button);
-        }
-      );
       const randomOption = getRandomItem(options);
-
-      await act(
-        async () =>{
-          const option = getByText(randomOption.label);
-          userEvent.click(option);
-        }
-      );
+      actions.openAndSelectOption(placeholder, randomOption.label);
 
       expect(onChangeOption).toBeCalledTimes(1);
       expect(onChangeOption).toBeCalledWith(randomOption);
@@ -287,32 +250,23 @@ describe('on click', () => {
       const placeholder = 'placeholder';
       const api = CreateApi<MockItem>({
         GetAllResult:  defaultMockItemResult,
-        GetAllTimeout: timeout
+        Timeout: timeout
       });
       
-      const { queryByRole, getByText } = render(
+      const { fields, actions } = RenderFormSelectResult(
         <HttpFormSelect
           api={api}
           placeholder={placeholder}
           disabled={true}
         />
       );
-      await act(
-        async () =>{
-          jest.advanceTimersByTime(timeout + 1);
-        }
-      );
+      await AdvanceTime(timeout);
 
-      let listbox = queryByRole('listbox');
+      let listbox = fields.queryOptions();
       expect(listbox).not.toBeInTheDocument();
-      await act(
-        async () =>{
-          const button = getByText(placeholder);
-          userEvent.click(button);
-        }
-      );
+      actions.toggleSelect(placeholder);
 
-      listbox = queryByRole('listbox');
+      listbox = fields.queryOptions();
       expect(listbox).not.toBeInTheDocument();
     });
   });
@@ -338,40 +292,24 @@ describe('on select', () => {
         ...defaultMockItemResult,
         data: options.map(x => ({ id: x.value, name: x.label } as MockItem))
       },
-      GetAllTimeout:timeout
+      Timeout:timeout
     });
     const placeholder = 'placeholder';
 
-    const { getByText } = render(
+    const { fields, actions } = RenderFormSelectResult(
       <HttpFormSelect
         api={api}
         placeholder={placeholder}
         disabled={false}
       />
     );
-    await act(
-      async () =>{
-        jest.advanceTimersByTime(timeout + 1);
-      }
-    );
-
-    await act(
-      async () =>{
-        const button = getByText(placeholder);
-        userEvent.click(button);
-      }
-    );
+    await AdvanceTime(timeout);
 
     const randomOption = getRandomItem(options);
-
-    await act(
-      async () =>{
-        const option = getByText(randomOption.label);
-        userEvent.click(option);
-      }
-    );
+    actions.openAndSelectOption(placeholder, randomOption.label, timeout);
   
-    expect(getByText(randomOption.label)).toHaveTextContent(randomOption.label);
+    const option = fields.toggleButton(randomOption.label);
+    expect(option).toHaveTextContent(randomOption.label);
   });
 
   it('should call onChangeOption method', async () => {
@@ -382,13 +320,13 @@ describe('on select', () => {
         ...defaultMockItemResult,
         data: options.map(x => ({ id: x.value, name: x.label } as MockItem))
       },
-      GetAllTimeout:timeout
+      Timeout:timeout
     });
     
     const placeholder = 'placeholder';
     const onChangeOption = jest.fn();
 
-    const { getByText } = render(
+    const { actions } = RenderFormSelectResult(
       <HttpFormSelect
         api={api}
         placeholder={placeholder}
@@ -396,26 +334,10 @@ describe('on select', () => {
         onChangeOption={onChangeOption}
       />
     );
-    await act(
-      async () =>{
-        jest.advanceTimersByTime(timeout + 1);
-      }
-    );
-
-    await act(
-      async () =>{
-        const button = getByText(placeholder);
-        userEvent.click(button);
-      }
-    );
+    await AdvanceTime(timeout);
 
     const randomOption = getRandomItem(options);
-    await act(
-      async () =>{
-        const option = getByText(randomOption.label);
-        userEvent.click(option);
-      }
-    );
+    actions.openAndSelectOption(placeholder, randomOption.label, timeout);
     
     expect(onChangeOption).toBeCalledTimes(1);
     expect(onChangeOption).toBeCalledWith(randomOption);
@@ -443,12 +365,11 @@ describe('on delete', () => {
             ...defaultMockItemResult,
             data: options.map(x => ({ id: x.value, name: x.label } as MockItem))
           },
-          GetAllTimeout: timeout,
-          DeleteResult: true,
-          DeleteTimeout:timeout
+          Timeout: timeout,
+          DeleteResult: true
         });
         const placeholder = 'placeholder';
-        const { getByText, getByTestId } = render(
+        const { actions } = RenderFormSelectResult(
           <HttpFormSelect
             api={api}
             placeholder={placeholder}
@@ -456,30 +377,10 @@ describe('on delete', () => {
             onDeleteOption={jest.fn()}
           />
         );
-        await act(
-          async () =>{
-            jest.advanceTimersByTime(timeout + 1);
-          }
-        );
-        await act(
-          async () =>{
-            const button = getByText(placeholder);
-            userEvent.click(button);
-          }
-        );
-    
+        await AdvanceTime(timeout);
+
         const randomOption = getRandomItem(options);
-        await act(
-          async () =>{
-            const option = getByTestId('delete-' + randomOption.value);
-            userEvent.click(option);
-          }
-        );
-        await act(
-          async () =>{
-            jest.advanceTimersByTime(timeout + 1);
-          }
-        );
+        actions.openAndDeleteOption(placeholder, randomOption.value, timeout);
     
         expect(api.DeleteAsync).toBeCalledTimes(1);
         expect(api.DeleteAsync).toBeCalledWith(randomOption.value);
@@ -492,13 +393,12 @@ describe('on delete', () => {
             ...defaultMockItemResult,
             data: options.map(x => ({ id: x.value, name: x.label } as MockItem))
           },
-          GetAllTimeout:timeout,
-          DeleteResult: true,
-          DeleteTimeout:timeout
+          Timeout:timeout,
+          DeleteResult: true
         });
         const placeholder = 'placeholder';
     
-        const { getByText, getByTestId } = render(
+        const { fields, actions } = RenderFormSelectResult(
           <HttpFormSelect
             api={api}
             placeholder={placeholder}
@@ -507,32 +407,12 @@ describe('on delete', () => {
           />
         );
     
-        await act(
-          async () =>{
-            jest.advanceTimersByTime(timeout + 1);
-          }
-        );
-        await act(
-          async () =>{
-            const button = getByText(placeholder);
-            userEvent.click(button);
-          }
-        );
+        await AdvanceTime(timeout);
+
+        const randomOption = getRandomItem(options);
+        actions.openAndDeleteOption(placeholder, randomOption.value, timeout);
     
-        await act(
-          async () =>{
-            const randomOption = getRandomItem(options);
-            const option = getByTestId('delete-' + randomOption.value);
-            userEvent.click(option);
-          }
-        );
-        await act(
-          async () =>{
-            jest.advanceTimersByTime(timeout + 1);
-          }
-        );
-    
-        const button = getByText(placeholder);
+        const button = fields.toggleButton(placeholder);
         expect(button).toHaveTextContent(placeholder);
       });
     }
@@ -556,13 +436,13 @@ describe('on delete', () => {
           ...defaultMockItemResult,
           data: options.map(x => ({ id: x.value, name: x.label } as MockItem))
         },
-        GetAllTimeout:timeout,
+        Timeout:timeout,
         DeleteResult: true,
         DeleteTimeout:timeout
       });
       const placeholder = 'placeholder';
   
-      const { getByText, getByTestId, queryByText } = render(
+      const { fields, actions } = RenderFormSelectResult(
         <HttpFormSelect
           api={api}
           placeholder={placeholder}
@@ -571,38 +451,16 @@ describe('on delete', () => {
         />
       );
   
-      await act(
-        async () =>{
-          jest.advanceTimersByTime(timeout + 1);
-        }
-      );
-      await act(
-        async () =>{
-          const button = getByText(placeholder);
-          userEvent.click(button);
-        }
-      );
-  
+      await AdvanceTime(timeout);
+
       const randomOption = getRandomItem(options);
-      await act(
-        async () =>{
-          const option = getByTestId('delete-' + randomOption.value);
-          userEvent.click(option);
-        }
-      );
-      await act(
-        async () =>{
-          jest.advanceTimersByTime(timeout + 1);
-        }
-      );
+      actions.openAndDeleteOption(placeholder, randomOption.value, timeout);
+      await AdvanceTime(timeout);
+
+      actions.toggleSelect(placeholder);
   
-      await act(
-        async () =>{
-          userEvent.click(getByText(placeholder));
-        }
-      );
-  
-      expect(queryByText(randomOption.label)).not.toBeInTheDocument();
+      const foundOption = fields.queryOption(randomOption.label);
+      expect(foundOption).not.toBeInTheDocument();
     });
     it('should call ondelete method', async() => {
       const options = CreateSelectOptions();
@@ -614,11 +472,11 @@ describe('on delete', () => {
           ...defaultMockItemResult,
           data: options.map(x => ({ id: x.value, name: x.label } as MockItem))
         },
-        GetAllTimeout:timeout,
+        Timeout:timeout,
         DeleteResult: true,
         DeleteTimeout:timeout
       });
-      const { getByText, getByTestId } = render(
+      const { actions } = RenderFormSelectResult(
         <HttpFormSelect
           api={api}
           placeholder={placeholder}
@@ -627,31 +485,12 @@ describe('on delete', () => {
         />
       );
   
-      await act(
-        async () =>{
-          jest.advanceTimersByTime(timeout + 1);
-        }
-      );
-      await act(
-        async () =>{
-          const button = getByText(placeholder);
-          userEvent.click(button);
-        }
-      );
-  
+      await AdvanceTime(timeout);
+
       const randomOption = getRandomItem(options);
-      await act(
-        async () =>{
-          const option = getByTestId('delete-' + randomOption.value);
-          userEvent.click(option);
-        }
-      );
-      await act(
-        async () =>{
-          jest.advanceTimersByTime(timeout + 1);
-        }
-      );
-  
+      actions.openAndDeleteOption(placeholder, randomOption.value, timeout);
+      await AdvanceTime(timeout);
+
       expect(onDeleteOption).toBeCalledTimes(1);
       expect(onDeleteOption).toBeCalledWith(randomOption);
     });
@@ -676,13 +515,13 @@ describe('on delete', () => {
           ...defaultMockItemResult,
           data: options.map(x => ({ id: x.value, name: x.label } as MockItem))
         },
-        GetAllTimeout:timeout,
+        Timeout:timeout,
         DeleteResult: false,
         DeleteTimeout:timeout
       });
       const placeholder = 'placeholder';
   
-      const { getByText, getByTestId } = render(
+      const { fields, actions } = RenderFormSelectResult(
         <HttpFormSelect
           api={api}
           placeholder={placeholder}
@@ -691,39 +530,14 @@ describe('on delete', () => {
         />
       );
   
-      await act(
-        async () =>{
-          jest.advanceTimersByTime(timeout + 1);
-        }
-      );
-      await act(
-        async () =>{
-          const button = getByText(placeholder);
-          userEvent.click(button);
-        }
-      );
-  
+      await AdvanceTime(timeout);
       const randomOption = getRandomItem(options);
-      await act(
-        async () =>{
-          const option = getByTestId('delete-' + randomOption.value);
-          userEvent.click(option);
-        }
-      );
-      await act(
-        async () =>{
-          jest.advanceTimersByTime(timeout + 1);
-        }
-      );
-      
-      await act(
-        async () =>{
-          const button = getByText(placeholder);
-          userEvent.click(button);
-        }
-      );
-      
-      expect(getByText(randomOption.label)).toBeInTheDocument();
+      actions.openAndDeleteOption(placeholder, randomOption.value, timeout);
+      await AdvanceTime(timeout);
+      actions.toggleSelect(placeholder);
+
+      const option = fields.optionByText(randomOption.label);
+      expect(option).toBeInTheDocument();
     });
     it('should not call ondelete method', async() => {
       const options = CreateSelectOptions();
@@ -735,11 +549,11 @@ describe('on delete', () => {
           ...defaultMockItemResult,
           data: options.map(x => ({ id: x.value, name: x.label } as MockItem))
         },
-        GetAllTimeout:timeout,
+        Timeout:timeout,
         DeleteResult: false,
         DeleteTimeout:timeout
       });
-      const { getByText, getByTestId } = render(
+      const { actions } = RenderFormSelectResult(
         <HttpFormSelect
           api={api}
           placeholder={placeholder}
@@ -748,30 +562,10 @@ describe('on delete', () => {
         />
       );
   
-      await act(
-        async () =>{
-          jest.advanceTimersByTime(timeout + 1);
-        }
-      );
-      await act(
-        async () =>{
-          const button = getByText(placeholder);
-          userEvent.click(button);
-        }
-      );
-  
+      await AdvanceTime(timeout);
       const randomOption = getRandomItem(options);
-      await act(
-        async () =>{
-          const option = getByTestId('delete-' + randomOption.value);
-          userEvent.click(option);
-        }
-      );
-      await act(
-        async () =>{
-          jest.advanceTimersByTime(timeout + 1);
-        }
-      );
+      actions.openAndDeleteOption(placeholder, randomOption.value, timeout);
+      await AdvanceTime(timeout);
   
       expect(onDeleteOption).not.toBeCalled();
     });
@@ -799,42 +593,22 @@ describe('on clear', () => {
           ...defaultMockItemResult,
           data: options.map(x => ({ id: x.value, name: x.label } as MockItem))
         },
-        GetAllTimeout:timeout
+        Timeout:timeout
       });
-      const { getByText } = render(
+      const { fields, actions } = RenderFormSelectResult(
         <HttpFormSelect
           api={api}
           placeholder={placeholder}
           disabled={false}
         />
       );
-      await act(
-        async () =>{
-          jest.advanceTimersByTime(timeout + 1);
-        }
-      );
-      act(
-        () => {
-          const button = getByText(placeholder);
-          userEvent.click(button);
-        }
-      );
 
-      act(
-        () => {
-          const randomOption = getRandomItem(options);
-          const option = getByText(randomOption.label);
-          userEvent.click(option);
-        }
-      );
+      await AdvanceTime(timeout);
+      const randomOption = getRandomItem(options);
+      actions.openAndSelectOption(placeholder, randomOption.label, timeout);
+      actions.clearSelection();
 
-      act(
-        () => {
-          const button = getByText('Clear');
-          userEvent.click(button);
-        }
-      );
-      const button = getByText(placeholder);
+      const button = fields.toggleButton(placeholder);
       expect(button).toBeInTheDocument();
     });
   });
@@ -858,9 +632,9 @@ describe('on clear', () => {
           ...defaultMockItemResult,
           data: options.map(x => ({ id: x.value, name: x.label } as MockItem))
         },
-        GetAllTimeout:timeout
+        Timeout:timeout
       });
-      const { getByText } = render(
+      const { fields, actions } = RenderFormSelectResult(
         <HttpFormSelect
           api={api}
           placeholder={'placeholder'}
@@ -868,18 +642,11 @@ describe('on clear', () => {
           value={randomOption.value}
         />
       );
-      await act(
-        async () =>{
-          jest.advanceTimersByTime(timeout + 1);
-        }
-      );
-      act(
-        () => {
-          const button = getByText('Clear');
-          userEvent.click(button);
-        }
-      );
-      const button = getByText(randomOption.label);
+
+      await AdvanceTime(timeout);
+      actions.clearSelection();
+
+      const button = fields.toggleButton(randomOption.label);
       expect(button).toBeInTheDocument();
     });
   });

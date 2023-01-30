@@ -21,7 +21,7 @@ const defaultContext = {
   transactionsApi:  CreateApi<Transaction>()
 } as ApisContext;
 
-export function MockUseApiContext(mockContext: ApisContext): ApisContext{
+export function MockUseApiContext(mockContext = defaultContext): ApisContext{
   const finalContext = {
     accountsApi:      mockContext.accountsApi     ?? defaultContext.accountsApi,
     categoriesApi:    mockContext.categoriesApi   ?? defaultContext.categoriesApi,

@@ -4,7 +4,7 @@ import FormSelectItem from './form-select-item';
 import SelectOption from './types/select-option';
 import UseFormSelectOption from './hooks/form-select-option-hook';
 
-type FormSelectProps = {
+export type FormSelectProps = {
   id?: string,
   className?:string,
   
@@ -43,9 +43,8 @@ export default function FormSelect(
       <div className={style.top}>
         <button
           type='button'
-          aria-haspopup='listbox'
-          aria-expanded={isOpen}
-          id={id}
+          aria-haspopup='listbox' aria-expanded={isOpen}
+          id={id} data-testid={id}
           className={isOpen ? 'expanded ' + className : className}
           disabled={disabled}
           onClick={toggle}
@@ -64,7 +63,7 @@ export default function FormSelect(
         isOpen &&
           (
             <ul
-              className={style[`options-body${isOpen ? '' : '--hiden'}`]}
+              className={style[`options-body${!isOpen ?? '--hiden'}`]}
               role='listbox'
             >
               {

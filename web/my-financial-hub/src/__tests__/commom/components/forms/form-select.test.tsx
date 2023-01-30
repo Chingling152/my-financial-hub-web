@@ -1,24 +1,21 @@
-import { render } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
-
 import { CreateSelectOptions } from '../../../../__mocks__/forms/select-option-builder';
 import { getRandomItem } from '../../../../__mocks__/utils/array-utils';
 
 import FormSelect from '../../../../commom/components/forms/form-select';
-import { act } from 'react-dom/test-utils';
+import { RenderFormSelectResult } from '../../../../__mocks__/forms/form-select/form-select';
 
 describe('on render', () => {
   describe('when does not have a start value', () => {
     it('should show the placeholder', () => {
       const expectedResult = 'placeholder';
-      const { getByText } = render(
+      const { fields } = RenderFormSelectResult(
         <FormSelect
           placeholder={expectedResult}
           disabled={false}
           options={[]}
         />
       );
-      const val = getByText(expectedResult);
+      const val = fields.toggleButton(expectedResult);
 
       expect(val).toBeInTheDocument();
       expect(val).toHaveTextContent(expectedResult);
@@ -29,14 +26,14 @@ describe('on render', () => {
     it('should show the value', () => {
       const options = CreateSelectOptions(5);
       const expectedResult = options[0];
-      const { getByText } = render(
+      const { fields } = RenderFormSelectResult(
         <FormSelect
           value={expectedResult.value}
           disabled={false}
           options={options}
         />
       );
-      const val = getByText(expectedResult.label);
+      const val = fields.toggleButton(expectedResult.label);
 
       expect(val).toBeInTheDocument();
       expect(val).toHaveTextContent(expectedResult.label);
@@ -45,12 +42,16 @@ describe('on render', () => {
 
   describe('when onDelete is null', () => {
     it('should not show delete option', () => {
-      const { queryByText } = render(
+      const expectedResult = 'placeholder';
+      const { actions, queryByText } = RenderFormSelectResult(
         <FormSelect
+          placeholder={expectedResult}
           disabled={false}
           options={[]}
         />
       );
+
+      actions.toggleSelect(expectedResult);
 
       const res = queryByText('Delete');
       expect(res).not.toBeInTheDocument();
@@ -60,13 +61,12 @@ describe('on render', () => {
 });
 
 describe('on click', () => {
-
   describe('when enabled', () => {
     it('should open the option list', () => {
       const options = CreateSelectOptions();
       const placeholder = 'placeholder';
 
-      const { queryByRole, getByText } = render(
+      const { actions, fields } = RenderFormSelectResult(
         <FormSelect
           placeholder={placeholder}
           disabled={false}
@@ -74,20 +74,19 @@ describe('on click', () => {
         />
       );
 
-      let listbox = queryByRole('listbox');
+      let listbox = fields.queryOptions();
       expect(listbox).not.toBeInTheDocument();
 
-      const button = getByText(placeholder);
-      userEvent.click(button);
+      actions.toggleSelect(placeholder);
 
-      listbox = queryByRole('listbox');
+      listbox = fields.queryOptions();
       expect(listbox).toBeInTheDocument();
     });
     it('should show all the options', () => {
       const options = CreateSelectOptions();
       const placeholder = 'placeholder';
 
-      const { queryByRole, getByText } = render(
+      const { actions, fields } = RenderFormSelectResult(
         <FormSelect
           placeholder={placeholder}
           disabled={false}
@@ -95,23 +94,21 @@ describe('on click', () => {
         />
       );
 
-      const listbox = queryByRole('listbox');
+      const listbox = fields.queryOptions();
       expect(listbox).not.toBeInTheDocument();
 
-      const button = getByText(placeholder);
-      userEvent.click(button);
+      actions.toggleSelect(placeholder);
 
-      const childrenCount = queryByRole('listbox')?.childElementCount;
+      const childrenCount = fields.queryOptions()?.childElementCount;
       expect(childrenCount).toBe(options.length);
     });
   });
-
   describe('when disabled', () => {
     it('should not open the option list', () => {
       const options = CreateSelectOptions();
       const placeholder = 'placeholder';
 
-      const { queryByRole, getByText } = render(
+      const { fields, actions } = RenderFormSelectResult(
         <FormSelect
           placeholder={placeholder}
           disabled={true}
@@ -119,17 +116,15 @@ describe('on click', () => {
         />
       );
 
-      let listbox = queryByRole('listbox');
+      let listbox = fields.queryOptions();
       expect(listbox).not.toBeInTheDocument();
 
-      const button = getByText(placeholder);
-      userEvent.click(button);
+      actions.toggleSelect(placeholder);
 
-      listbox = queryByRole('listbox');
+      listbox = fields.queryOptions();
       expect(listbox).not.toBeInTheDocument();
     });
   });
-
 });
 
 describe('on select', () => {
@@ -137,7 +132,7 @@ describe('on select', () => {
     const options = CreateSelectOptions();
     const placeholder = 'placeholder';
 
-    const { getByText } = render(
+    const { fields, actions } = RenderFormSelectResult(
       <FormSelect
         placeholder={placeholder}
         disabled={false}
@@ -145,23 +140,18 @@ describe('on select', () => {
       />
     );
 
-    const button = getByText(placeholder);
-    userEvent.click(button);
-
     const randomOption = getRandomItem(options);
+    actions.openAndSelectOption(placeholder, randomOption.label);
 
-    const option = getByText(randomOption.label);
-    userEvent.click(option);
-
+    const button = fields.toggleButton(randomOption.label);
     expect(button).toHaveTextContent(randomOption.label);
   });
-
   it('should call onChangeOption method', () => {
     const options = CreateSelectOptions();
     const placeholder = 'placeholder';
     const onChangeOption = jest.fn();
 
-    const { getByText } = render(
+    const { actions } = RenderFormSelectResult(
       <FormSelect
         placeholder={placeholder}
         disabled={false}
@@ -170,48 +160,39 @@ describe('on select', () => {
       />
     );
 
-    const button = getByText(placeholder);
-    userEvent.click(button);
-
     const randomOption = getRandomItem(options);
-
-    const option = getByText(randomOption.label);
-    userEvent.click(option);
+    actions.openAndSelectOption(placeholder, randomOption.label);
 
     expect(onChangeOption).toBeCalledTimes(1);
   });
 });
 
 describe('on delete', () => {
-  it('should set the placeholder value', () => {
-    const options = CreateSelectOptions();
-    const placeholder = 'placeholder';
-
-    const { getByText, getByTestId } = render(
-      <FormSelect
-        placeholder={placeholder}
-        disabled={false}
-        options={options}
-        onDeleteOption={jest.fn()}
-      />
-    );
-
-    const button = getByText(placeholder);
-    userEvent.click(button);
-
-    const randomOption = getRandomItem(options);
-
-    const option = getByTestId('delete-' + randomOption.value);
-    userEvent.click(option);
-
-    expect(button).toHaveTextContent(placeholder);
-  });
-
   it('should remove the selected option', () => {
     const options = CreateSelectOptions();
     const placeholder = 'placeholder';
+    const randomOption = getRandomItem(options);
 
-    const { getByText, getByTestId, queryByText } = render(
+    const { actions, fields } = RenderFormSelectResult(
+      <FormSelect
+        placeholder={placeholder}
+        disabled={false}
+        options={options}
+        value={randomOption.value}
+        onDeleteOption={jest.fn()}
+      />
+    );
+
+    actions.toggleSelect(randomOption.label);
+    actions.deleteOption(randomOption.value);
+
+    expect(fields.toggleButton(placeholder)).toHaveTextContent(placeholder);
+  });
+  it('should remove the option from the option list', () => {
+    const options = CreateSelectOptions();
+    const placeholder = 'placeholder';
+
+    const { fields, actions } = RenderFormSelectResult(
       <FormSelect
         placeholder={placeholder}
         disabled={false}
@@ -220,37 +201,22 @@ describe('on delete', () => {
       />
     );
 
-    act(
-      () => {
-        const button = getByText(placeholder);
-        userEvent.click(button);
-      }
-    );
+    actions.toggleSelect(placeholder);
 
     const randomOption = getRandomItem(options);
-    expect(getByText(randomOption.label)).toBeInTheDocument();
+    expect(fields.optionByText(randomOption.label)).toBeInTheDocument();
 
-    act(
-      () => {
-        const button = getByText(placeholder);
-        userEvent.click(button);
+    actions.deleteOption(randomOption.value);
+    actions.toggleSelect(placeholder);
 
-        const option = getByTestId('delete-' + randomOption.value);
-        userEvent.click(option);
-
-        userEvent.click(button);
-      }
-    );
-
-    expect(queryByText(randomOption.label)).not.toBeInTheDocument();
+    expect(fields.queryOption(randomOption.label)).not.toBeInTheDocument();
   });
-
   it('should call ondelete method', () => {
     const options = CreateSelectOptions();
     const placeholder = 'placeholder';
     const onDeleteOption = jest.fn();
 
-    const { getByText, getByTestId } = render(
+    const { actions } = RenderFormSelectResult(
       <FormSelect
         placeholder={placeholder}
         disabled={false}
@@ -259,13 +225,9 @@ describe('on delete', () => {
       />
     );
 
-    const button = getByText(placeholder);
-    userEvent.click(button);
-
+    actions.toggleSelect(placeholder);
     const randomOption = getRandomItem(options);
-
-    const option = getByTestId('delete-' + randomOption.value);
-    userEvent.click(option);
+    actions.deleteOption(randomOption.value);
 
     expect(onDeleteOption).toBeCalledTimes(1);
   });
@@ -277,35 +239,19 @@ describe('on clear', () => {
       const options = CreateSelectOptions();
       const placeholder = 'placeholder';
 
-      const { getByText } = render(
+      const { actions, fields } = RenderFormSelectResult(
         <FormSelect
           placeholder={placeholder}
           disabled={false}
           options={options}
         />
       );
-      act(
-        () => {
-          const button = getByText(placeholder);
-          userEvent.click(button);
-        }
-      );
 
-      act(
-        () => {
-          const randomOption = getRandomItem(options);
-          const option = getByText(randomOption.label);
-          userEvent.click(option);
-        }
-      );
+      const randomOption = getRandomItem(options);
+      actions.openAndSelectOption(placeholder, randomOption.label);
+      actions.clearSelection();
 
-      act(
-        () => {
-          const button = getByText('Clear');
-          userEvent.click(button);
-        }
-      );
-      const button = getByText(placeholder);
+      const button = fields.toggleButton(placeholder);
       expect(button).toBeInTheDocument();
     });
   });
@@ -314,7 +260,7 @@ describe('on clear', () => {
       const options = CreateSelectOptions();
       const randomOption = getRandomItem(options);
 
-      const { getByText } = render(
+      const { actions, fields } = RenderFormSelectResult(
         <FormSelect
           value={randomOption.value}
           disabled={true}
@@ -322,13 +268,9 @@ describe('on clear', () => {
         />
       );
 
-      act(
-        () => {
-          const button = getByText('Clear');
-          userEvent.click(button);
-        }
-      );
-      const button = getByText(randomOption.label);
+      actions.clearSelection();
+
+      const button = fields.toggleButton(randomOption.label);
       expect(button).toBeInTheDocument();
     });
   });

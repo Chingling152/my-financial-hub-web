@@ -48,12 +48,7 @@ export default function UseFormSelectOption(
 
   useEffect(() => {
     setOptionsList(options);
-    
-    const find = options.filter(x => x.value === value);
-    const index = value === undefined ? -1 : optionsList.indexOf(find[0]);
-
-    setSelectedOption(index);
-  }, [options, optionsList ,value]); 
+  }, [ options ]); 
 
   useEffect(() => {
     const find = optionsList.filter(x => x.value === value);

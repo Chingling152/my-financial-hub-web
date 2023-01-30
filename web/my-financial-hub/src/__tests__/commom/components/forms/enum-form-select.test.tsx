@@ -1,7 +1,6 @@
-import { render, act } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 import EnumFormSelect from '../../../../commom/components/forms/form-select/enum-form-select';
 import { enumToString } from '../../../../commom/utils/enum-utils';
+import { RenderFormSelectResult } from '../../../../__mocks__/forms/form-select/form-select';
 
 enum TestEnum{
   val=9,
@@ -13,20 +12,20 @@ enum TestEnum{
 describe('on render', ()=>{
   it('should show the first item of the enum', ()=>{
     const expectedResult = enumToString(TestEnum,1);
-    const { getByText } = render(
+    const { fields } = RenderFormSelectResult(
       <EnumFormSelect 
         options={TestEnum}
         disabled={false}
       />
     );
-    const val = getByText(expectedResult);
+    const val = fields.toggleButton(expectedResult);
     
     expect(val).toBeInTheDocument();
     expect(val).toHaveTextContent(expectedResult);
   });
   it('should show the preset value', ()=>{
     const expectedResult = enumToString(TestEnum,2);
-    const { getByText } = render(
+    const { getByText } = RenderFormSelectResult(
       <EnumFormSelect 
         options={TestEnum}
         disabled={false}
@@ -42,21 +41,17 @@ describe('on render', ()=>{
 describe('on select', () => {
   it('should set the selected value', () => {
     const placeholder = enumToString(TestEnum,1);
-    const { getByText } = render(
+    const { actions, fields } = RenderFormSelectResult(
       <EnumFormSelect
         disabled={false}
         options={TestEnum}
       />
     );
 
-    const button = getByText(placeholder);
-    userEvent.click(button);
-
     const randomOption = enumToString(TestEnum,4);
+    actions.openAndSelectOption(placeholder,randomOption);
 
-    const option = getByText(randomOption);
-    userEvent.click(option);
-
+    const button = fields.toggleButton(randomOption);
     expect(button).toHaveTextContent(randomOption);
   });
 
@@ -64,7 +59,7 @@ describe('on select', () => {
     const placeholder = enumToString(TestEnum,1);
     const onChangeOption = jest.fn();
 
-    const { getByText } = render(
+    const { actions } = RenderFormSelectResult(
       <EnumFormSelect
         disabled={false}
         options={TestEnum}
@@ -72,12 +67,8 @@ describe('on select', () => {
       />
     );
 
-    const button = getByText(placeholder);
-    userEvent.click(button);
-
     const randomOption = enumToString(TestEnum,9);
-    const option = getByText(randomOption);
-    userEvent.click(option);
+    actions.openAndSelectOption(placeholder,randomOption);
 
     expect(onChangeOption).toBeCalledTimes(1);
   });
@@ -86,19 +77,16 @@ describe('on select', () => {
 describe('on clear', ()=>{
   it('should set the first item of the enum', ()=>{
     const expectedResult = enumToString(TestEnum,1);
-    const { getByText } = render(
+    const { fields, actions } = RenderFormSelectResult(
       <EnumFormSelect 
         options={TestEnum}
         disabled={false}
       />
     );
-    act(
-      () =>{
-        const val = getByText('Clear');
-        userEvent.click(val);
-      }
-    );
 
-    expect(getByText(expectedResult)).toHaveTextContent(expectedResult);
+    actions.clearSelection();
+
+    const button = fields.toggleButton(expectedResult);
+    expect(button).toHaveTextContent(expectedResult);
   });
 });
