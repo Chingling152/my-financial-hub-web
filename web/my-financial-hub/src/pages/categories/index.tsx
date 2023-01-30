@@ -10,6 +10,7 @@ import HttpFormSelect from '../../commom/components/forms/form-select/http-form-
 
 export default function CategoriesPage() {
   const { categoriesApi } = useApisContext();
+  console.log(categoriesApi);
   
   const [categories,setCategories] = useState<Category[]>([]);
   const [selectedCategory, setCategory] = useState<Category>();
@@ -18,12 +19,11 @@ export default function CategoriesPage() {
   const selectCategory = function(option?: SelectOption){
     if(!option){
       setCategory(defaultCategory);
-      return;
-    }
-
-    const foundCategories = categories.filter(c => c.id == option.value);
-    if(foundCategories.length > 0){
-      setCategory(foundCategories[0]);
+    }else{
+      const foundCategories = categories.filter(c => c.id == option.value);
+      if(foundCategories.length > 0){
+        setCategory(foundCategories[0]);
+      }
     }
   };
 
@@ -53,6 +53,7 @@ export default function CategoriesPage() {
         onSubmit={submitCategory}
       />
       <HttpFormSelect 
+        id='category-select'
         api={categoriesApi}
         placeholder='Select a category'
         disabled={isLoading}

@@ -5,36 +5,26 @@ import CategoryForm, { CategoryFormProps } from '../../../commom/components/cate
 import { categoryFormFields } from './category-form-fields';
 import { categoryFormActions } from './category-form-actions';
 
-import { defaultCategory } from '../../../commom/interfaces/category';
-
-interface CategoryFormFields{
-  name        : () => HTMLElement,
-  description : () => HTMLElement,
-  isActive    : () => HTMLElement,
-  create      : () => HTMLElement,
-  update      : () => HTMLElement,
-}
-
-interface CategoryFormActions{
-  submit: (timeout: number) => Promise<void>,
-  create: (timeout: number) => Promise<void>,
-  update: (timeout: number) => Promise<void>
-}
+import { Category, defaultCategory } from '../../../commom/interfaces/category';
 
 const defaultProps = {
   formData: defaultCategory, 
   onSubmit: undefined
 };
 
-function createCategoryFormActions(container: HTMLElement): CategoryFormActions{
+function createCategoryFormActions(container: HTMLElement){
   return {
-    submit      : async (timeout: number): Promise<void> => categoryFormActions.submit(container, timeout),
-    create      : async (timeout: number): Promise<void> => categoryFormActions.create(container, timeout),
-    update      : async (timeout: number): Promise<void> => categoryFormActions.update(container, timeout)
+    submit              : async (timeout = 1):                    Promise<void> => categoryFormActions.submit(container, timeout),
+    create              : async (timeout = 1):                    Promise<void> => categoryFormActions.create(container, timeout),
+    update              : async (timeout = 1):                    Promise<void> => categoryFormActions.update(container, timeout),
+    setName             : async (value:string,timeout = 1):       Promise<void> => categoryFormActions.setName(container, value, timeout),
+    setDescription      : async (value:string,timeout = 1):       Promise<void> => categoryFormActions.setDescription(container, value, timeout),
+    setIsActive         : async (value:boolean,timeout = 1):      Promise<void> => categoryFormActions.setIsActive(container, value, timeout),
+    setFormData         : async (category:Category,timeout = 1):  Promise<void> => categoryFormActions.setFormData(container, category, timeout)
   };
 }
 
-function createCategoryFormFields(container: HTMLElement): CategoryFormFields{
+function createCategoryFormFields(container: HTMLElement){
   return {
     name        : () => categoryFormFields.name(container),
     description : () => categoryFormFields.description(container),
@@ -57,7 +47,7 @@ export default function RenderCategoryForm(props: CategoryFormProps = defaultPro
 }
 
 export function CategoryFormComponent(container: HTMLElement){
-  const form = container.querySelector('form'); //TODO: improve search
+  const form = container.querySelector('form');
 
   if(form){
     const formWithin = within(form);

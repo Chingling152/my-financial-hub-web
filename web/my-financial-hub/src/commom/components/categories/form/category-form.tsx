@@ -31,14 +31,13 @@ export default function CategoryForm(
     }
 
     onSubmit?.(cat);
+
     setCategory(defaultCategory);
     setLoading(false);
   };
 
   useEffect(
-    () =>{
-      setCategory(formData);
-    },
+    () => setCategory(formData),
     [formData]
   );
 

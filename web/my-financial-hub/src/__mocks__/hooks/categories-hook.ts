@@ -5,7 +5,6 @@ import { Category } from '../../commom/interfaces/category';
 const randTimeOut = getRandomInt(500, 5000);
 
 export function MockUseCreateCategory(category: Category, timeout: number = randTimeOut) {
-
   return jest.spyOn(hooks, 'UseCreateCategory').mockImplementation(
     ()=>{
       jest.setTimeout(timeout);
@@ -43,7 +42,6 @@ export function MockUseDeleteCategory() {
 }
 
 export function MockUseUpdateCategory(category?: Category, timeout?: number) {
-
   return jest.spyOn(hooks, 'UseUpdateCategory').mockImplementation(
     async () => {
       setTimeout(() => {
