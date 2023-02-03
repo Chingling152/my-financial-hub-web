@@ -2,7 +2,7 @@ import AccountApi from '../../../commom/http/account-api';
 import { Account , defaultAccount } from '../../../commom/interfaces/account';
 import { AccountsContext } from '../../../commom/types/account';
 
-//TODO: find a way to use without params
+//TODO: remove AccountsContext dependency
 export async function useGetAccounts(context: AccountsContext, accountsApi: AccountApi) {
   const [state, setState] = context;
   try {

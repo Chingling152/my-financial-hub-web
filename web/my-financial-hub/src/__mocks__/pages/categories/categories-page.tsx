@@ -16,7 +16,7 @@ export default function RenderCategoriesPage(props = defaultProps){
   return {
     ...component,
     components: {
-      form: CategoryFormComponent(container),
+      form:   CategoryFormComponent(container),
       select: FormSelectComponent(container, 'category-select')
     }
   };

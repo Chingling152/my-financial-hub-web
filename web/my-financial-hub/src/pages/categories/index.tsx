@@ -10,7 +10,6 @@ import HttpFormSelect from '../../commom/components/forms/form-select/http-form-
 
 export default function CategoriesPage() {
   const { categoriesApi } = useApisContext();
-  console.log(categoriesApi);
   
   const [categories,setCategories] = useState<Category[]>([]);
   const [selectedCategory, setCategory] = useState<Category>();
@@ -39,7 +38,7 @@ export default function CategoriesPage() {
     if(foundCategories.length > 0){
       const index = categories.findIndex(obj => obj.id == category.id);
       categories[index] = category;
-      setCategories(categories);
+      setCategories([...categories]);
     }else{
       setCategories([...categories, category]);
     }

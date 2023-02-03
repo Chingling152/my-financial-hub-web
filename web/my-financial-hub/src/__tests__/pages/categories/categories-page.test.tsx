@@ -75,6 +75,8 @@ describe('on update a category', ()=>{
 });
 
 describe('on select a category', ()=>{
+  beforeEach(() => jest.useFakeTimers('modern'));
+  afterEach(() => jest.useRealTimers());
   it('should set the category on the form', ()=>{
     const categories = CreateCategories();
     const category = getRandomItem(categories);
@@ -106,6 +108,8 @@ describe('on select a category', ()=>{
 });
 
 describe('on delete a category', ()=>{
+  beforeEach(() => jest.useFakeTimers('modern'));
+  afterEach(() => jest.useRealTimers());
   it('should clear the category form', ()=>{
     const categories = CreateCategories();
     const category = getRandomItem(categories);

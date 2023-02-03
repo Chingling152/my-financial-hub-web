@@ -4,7 +4,7 @@ import FormSelectItem from './form-select-item';
 import SelectOption from './types/select-option';
 import UseFormSelectOption from './hooks/form-select-option-hook';
 
-export type FormSelectProps = {
+export interface FormSelectProps{
   id?: string,
   className?:string,
   

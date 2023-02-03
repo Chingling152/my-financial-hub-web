@@ -27,7 +27,7 @@ function getFilterQuery(filter?: TransactionFilter): string{
     query += createUrlQuery('accounts',filter.accounts);
     query += createUrlQuery('categories',filter.categories);
 
-    if(query.length >1){
+    if(query.length > 1){
       query = query.substring(0,query.length - 1);
     }
   }
@@ -40,7 +40,14 @@ export async function FetchTransactions(filter?: TransactionFilter): Promise<Ser
   const json = await result.json() as ServiceResult<Transaction[]>;
 
   if (!result.ok) {
-    throw json;//TODO:
+    return {
+      hasError: true,
+      error: {
+        code: result.status,
+        message: result.statusText,
+      },
+      data: [],
+    };
   }
 
   return json;
