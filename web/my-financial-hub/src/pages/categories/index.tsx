@@ -1,16 +1,12 @@
 import { useState } from 'react';
 
-import { useApisContext } from '../../commom/contexts/api-context';
-
 import { Category, defaultCategory } from '../../commom/interfaces/category';
 
 import CategoryForm from '../../commom/components/categories/form/category-form';
 import SelectOption from '../../commom/components/forms/form-select/types/select-option';
-import HttpFormSelect from '../../commom/components/forms/form-select/http-form-select';
+import CategoryFormSelect from '../../commom/components/categories/select/category-select';
 
-export default function CategoriesPage() {
-  const { categoriesApi } = useApisContext();
-  
+export default function CategoriesPage() {  
   const [categories,setCategories] = useState<Category[]>([]);
   const [selectedCategory, setCategory] = useState<Category>();
   const [isLoading, setLoading] = useState(false);
@@ -51,9 +47,8 @@ export default function CategoriesPage() {
         formData={selectedCategory} 
         onSubmit={submitCategory}
       />
-      <HttpFormSelect 
+      <CategoryFormSelect 
         id='category-select'
-        api={categoriesApi}
         placeholder='Select a category'
         disabled={isLoading}
         onChangeOption={selectCategory}

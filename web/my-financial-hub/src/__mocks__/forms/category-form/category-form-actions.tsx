@@ -15,9 +15,9 @@ const submit = async function (container: HTMLElement, timeout: number): Promise
 };
 
 const create = async function (container: HTMLElement, timeout: number): Promise<void> {
-  const createButton = categoryFormFields.create(container);
   await act(
     async () => {
+      const createButton = categoryFormFields.create(container);
       userEvent.click(createButton);
       jest.advanceTimersByTime(timeout + 1);
     }

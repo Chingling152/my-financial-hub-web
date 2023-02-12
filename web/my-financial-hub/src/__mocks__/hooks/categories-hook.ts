@@ -16,27 +16,21 @@ export function MockUseCreateCategory(category: Category, timeout: number = rand
 export function MockUseGetCategories(categories?: Category[], timeout: number = randTimeOut) {
   return jest.spyOn(hooks, 'UseGetCategories').mockImplementation(
     () => {
-      return new Promise(
-        () => {
-          setTimeout(() => {
-            if (categories) {
-              return Promise.resolve(categories);
-            } else {
-              return Promise.reject([]);
-            }
-          }, timeout);
-        }
-      );
+      jest.setTimeout(timeout);
+      if (categories) {
+        return Promise.resolve(categories);
+      } else {
+        return Promise.reject([]);
+      }
     }
   );
 }
 
-export function MockUseDeleteCategory() {
+export function MockUseDeleteCategory(timeout: number = randTimeOut) {
   return jest.spyOn(hooks, 'UseDeleteCategory').mockImplementation(
     async () => {
-      setTimeout(() => {
-        Promise.resolve();
-      }, randTimeOut);
+      jest.setTimeout(timeout);
+      Promise.resolve();
     }
   );
 }

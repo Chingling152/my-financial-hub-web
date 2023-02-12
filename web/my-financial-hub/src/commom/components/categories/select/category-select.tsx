@@ -1,13 +1,15 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState } from 'react';
-import FormSelect from '..';
-import Api from '../../../../http/api';
-import SelectOption from '../types/select-option';
+import { useApisContext } from '../../../contexts/api-context';
 
-interface IHttpFormSelectProps{
+import { UseDeleteCategory, UseGetCategories } from '../../../hooks/categories-hooks';
+
+import SelectOption from '../../forms/form-select/types/select-option';
+
+import FormSelect from '../../forms/form-select';
+
+interface ICategoryFormSelectProps{
   id?: string,
   className?: string,
-  api: Api<any>,
   value?: string,
   placeholder?: string,
   disabled: boolean,
@@ -15,54 +17,51 @@ interface IHttpFormSelectProps{
   onDeleteOption?: (selectedOption?: SelectOption) => void
 }
 
-//TODO: improve component functionality
-export default function HttpFormSelect(
+export default function CategoryFormSelect(
   {
     id, className,
-    api,value,
+    value,
     disabled, placeholder = '',
     onChangeOption,onDeleteOption
   }:
-  IHttpFormSelectProps
+  ICategoryFormSelectProps
 ) {
   const [options, setOptions] = useState<SelectOption[]>([]);
   const [isLoading, setLoading] = useState<boolean>(true);
+  const { categoriesApi } = useApisContext();  
 
-  const deleteData = async function(selectedOption?: string): Promise<void>{
+  const deleteCategory = async function(selectedOption?: string): Promise<void>{
     setLoading(true);
     const find = options.filter(x => x.value === selectedOption);
     const option = find.length > 0 && find[0];
 
     if(option){
-      const response = await api.DeleteAsync(option.value);
-      if(response){
-        setOptions(options.filter(x => x.value != option.value));
-        onDeleteOption?.(option);
-      }
+      await UseDeleteCategory(option.value, categoriesApi);
+      onDeleteOption?.(option);
     }
     setLoading(false);
   };
 
   useEffect(
     () => {
-      const getData = async function(): Promise<void> {
+      const getCategories = async function(): Promise<void>{
         setLoading(true);
-        const response = await api.GetAllAsync();
-        if(!response.hasError){
+        const response = await UseGetCategories(categoriesApi);
+        if(response){
           setOptions(
-            response.data.map(x => 
+            response.map(x => 
               ({
                 label: x['name'],
-                value: x['id']
+                value: x['id']?? ''
               })
             )
           );
         }
         setLoading(false);
       };
-      getData();
+      getCategories();
     }, 
-    [api]
+    [categoriesApi]
   );
 
   return (
@@ -74,7 +73,7 @@ export default function HttpFormSelect(
       disabled={disabled || isLoading}
       placeholder={placeholder}
       onChangeOption={onChangeOption}
-      onDeleteOption={onDeleteOption && deleteData}
+      onDeleteOption={onDeleteOption && deleteCategory}
     />
   );
 }

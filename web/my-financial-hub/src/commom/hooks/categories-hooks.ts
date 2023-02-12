@@ -21,7 +21,6 @@ export async function UseUpdateCategory(category: Category, api: CategoryApi) {
   }
 }
 
-
 export async function UseGetCategories(api: CategoryApi): Promise<Category[]> {
   try {
     const accountsResult = await api.GetAllAsync();

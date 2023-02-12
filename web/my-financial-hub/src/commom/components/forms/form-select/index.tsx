@@ -39,13 +39,11 @@ export default function FormSelect(
   );
 
   return (
-    <div>
+    <div id={id} data-testid={id}>
       <div className={style.top}>
         <button
           type='button'
-          aria-haspopup='listbox' aria-expanded={isOpen}
-          id={id} data-testid={id}
-          className={isOpen ? 'expanded ' + className : className}
+          className={isOpen ? 'expanded ' + className : className} aria-expanded={isOpen}
           disabled={disabled}
           onClick={toggle}
         >
@@ -64,7 +62,7 @@ export default function FormSelect(
           (
             <ul
               className={style[`options-body${!isOpen ?? '--hiden'}`]}
-              role='listbox'
+              role='listbox' aria-haspopup='listbox' 
             >
               {
                 optionsList.map(
